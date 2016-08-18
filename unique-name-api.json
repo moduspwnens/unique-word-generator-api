@@ -1,0 +1,485 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "An API for generating unique names.",
+    "Parameters": {
+		
+	},
+	"Mappings": {
+		"StaticVariables": {
+			"Main": {
+                "GenerateNameHttpMethod": "GET"
+			}
+		}
+	},
+	"Resources": {
+		"ReservedNamesTable": {
+			"Type": "AWS::DynamoDB::Table",
+			"Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "PartitionKey",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "RangeKey",
+                        "AttributeType": "S"
+                    }
+                ],
+				"KeySchema": [
+				    {
+				        "AttributeName": "PartitionKey",
+                        "KeyType": "HASH"
+				    },
+				    {
+				        "AttributeName": "RangeKey",
+                        "KeyType": "RANGE"
+				    }
+				],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 1,
+                    "WriteCapacityUnits": 1
+                }
+			}
+		},
+		"FunctionConfigurationTable": {
+			"Type": "AWS::DynamoDB::Table",
+			"Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "PartitionKey",
+                        "AttributeType": "S"
+                    }
+                ],
+				"KeySchema": [
+				    {
+				        "AttributeName": "PartitionKey",
+                        "KeyType": "HASH"
+				    }
+				],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 1,
+                    "WriteCapacityUnits": 1
+                }
+			}
+		},
+		"ConfigurationSetupFunction": {
+			"Type": "AWS::Lambda::Function",
+			"Properties": {
+                "Description": "Performs initial setup of unique name generator.",
+				"Handler": "index.lambda_handler",
+				"Role": {
+					"Fn::GetAtt": ["ConfigurationSetupRole", "Arn"]
+				},
+				"Code": {
+					"ZipFile": {
+						"Fn::Join": ["\n", [
+                            "from __future__ import print_function",
+                            "",
+                            "def lambda_handler(event, context):",
+                            "    print(event)",
+                            "    return {}",
+                            ""
+                        ]]
+					}
+				},
+				"Runtime": "python2.7",
+				"Timeout": "30"
+			}
+		},
+		"ConfigurationSetupRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Effect": "Allow",
+						"Principal": {
+							"Service": ["lambda.amazonaws.com"]
+						},
+						"Action": ["sts:AssumeRole"]
+					}]
+				},
+				"Path": "/"
+			}
+		},
+        "ConfigurationSetupRoleActions": {
+            "Type": "AWS::IAM::ManagedPolicy",
+            "Properties": {
+                "PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Effect": "Allow",
+						"Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+						"Resource": {
+    						"Fn::Join": [":", [
+                                "arn",
+                                "aws",
+                                "logs",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                {
+                                    "Ref": "AWS::AccountId"
+                                },
+                                "log-group",
+                                {
+                                    "Fn::Join": ["", [
+                                        "/aws/lambda/",
+                                        {
+                                            "Ref": "ConfigurationSetupFunction"
+                                        }
+                                    ]]
+                                },
+                                "log-stream",
+                                "*"
+                            ]]
+						}
+					},
+                    {
+                        "Effect": "Allow",
+                        "Action": ["dynamodb:PutItem"],
+                        "Resource": {
+    						"Fn::Join": [":", [
+                                "arn",
+                                "aws",
+                                "dynamodb",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                {
+                                    "Ref": "AWS::AccountId"
+                                },
+                                {
+                                    "Fn::Join": ["", [
+                                        "table/",
+                                        {
+                                            "Ref": "FunctionConfigurationTable"
+                                        }
+                                    ]]
+                                }
+                            ]]
+                        }
+                    }]
+				},
+                "Roles": [
+                    { "Ref": "ConfigurationSetupRole" }
+                ]
+            }
+        },
+		"NameGeneratorFunction": {
+			"Type": "AWS::Lambda::Function",
+			"Properties": {
+                "Description": "Responds to API requests for the unique name generator.",
+				"Handler": "index.lambda_handler",
+				"Role": {
+					"Fn::GetAtt": ["NameGeneratorRole", "Arn"]
+				},
+				"Code": {
+					"ZipFile": {
+						"Fn::Join": ["\n", [
+                            "from __future__ import print_function",
+                            "",
+                            "def lambda_handler(event, context):",
+                            "    print(event)",
+                            "    return {}",
+                            ""
+                        ]]
+					}
+				},
+				"Runtime": "python2.7",
+				"Timeout": "30"
+			}
+		},
+		"NameGeneratorRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Effect": "Allow",
+						"Principal": {
+							"Service": ["lambda.amazonaws.com"]
+						},
+						"Action": ["sts:AssumeRole"]
+					}]
+				},
+				"Path": "/"
+			}
+		},
+        "NameGeneratorRoleActions": {
+            "Type": "AWS::IAM::ManagedPolicy",
+            "Properties": {
+                "PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Effect": "Allow",
+						"Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+						"Resource": {
+    						"Fn::Join": [":", [
+                                "arn",
+                                "aws",
+                                "logs",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                {
+                                    "Ref": "AWS::AccountId"
+                                },
+                                "log-group",
+                                {
+                                    "Fn::Join": ["", [
+                                        "/aws/lambda/",
+                                        {
+                                            "Ref": "NameGeneratorFunction"
+                                        }
+                                    ]]
+                                },
+                                "log-stream",
+                                "*"
+                            ]]
+						}
+					},
+                    {
+                        "Effect": "Allow",
+                        "Action": ["dynamodb:GetItem"],
+                        "Resource": {
+    						"Fn::Join": [":", [
+                                "arn",
+                                "aws",
+                                "dynamodb",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                {
+                                    "Ref": "AWS::AccountId"
+                                },
+                                {
+                                    "Fn::Join": ["", [
+                                        "table/",
+                                        {
+                                            "Ref": "FunctionConfigurationTable"
+                                        }
+                                    ]]
+                                }
+                            ]]
+                        }
+                    },
+                    {
+                        "Effect": "Allow",
+                        "Action": ["dynamodb:PutItem", "dynamodb:Query"],
+                        "Resource": {
+    						"Fn::Join": [":", [
+                                "arn",
+                                "aws",
+                                "dynamodb",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                {
+                                    "Ref": "AWS::AccountId"
+                                },
+                                {
+                                    "Fn::Join": ["", [
+                                        "table/",
+                                        {
+                                            "Ref": "ReservedNamesTable"
+                                        }
+                                    ]]
+                                }
+                            ]]
+                        }
+                    }]
+				},
+                "Roles": [
+                    { "Ref": "NameGeneratorRole" }
+                ]
+            }
+        },
+        "NameGeneratorAPI": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+                "Name": "NameGenerator",
+                "Description": "An API for generating unique names."
+            }
+        },
+        "NameGeneratorAPIGenerateNameResource": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+                "ParentId": {
+                    "Fn::GetAtt": ["NameGeneratorAPI", "RootResourceId"]
+                },
+                "PathPart": "generate-name",
+                "RestApiId": {
+                    "Ref": "NameGeneratorAPI"
+                }
+            }
+        },
+        "NameGeneratorAPILambdaPermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:InvokeFunction",
+                "FunctionName": {
+                    "Ref": "NameGeneratorFunction"
+                },
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                    "Fn::Join": [":", [
+                        "arn",
+                        "aws",
+                        "execute-api",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        {
+                            "Ref": "AWS::AccountId"
+                        },
+                        {
+                            "Fn::Join": ["/", [
+                                {
+                                    "Ref": "NameGeneratorAPI"
+                                },
+                                "*",
+                                {
+                                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateNameHttpMethod"]
+                                },
+                                "generate-name"
+                            ]]
+                        }
+                    ]]
+                }
+            },
+            "DependsOn": [
+                "NameGeneratorRoleActions"
+            ]
+        },
+        "NameGeneratorAPIGenerateNameResourceMainMethod": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+                "AuthorizationType": "NONE",
+                "ResourceId": {
+                    "Ref": "NameGeneratorAPIGenerateNameResource"
+                },
+                "RestApiId": {
+                    "Ref": "NameGeneratorAPI"
+                },
+                "HttpMethod": 
+                {
+                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateNameHttpMethod"]
+                },
+                "Integration": {
+                    "IntegrationHttpMethod": "POST",
+                    "IntegrationResponses": [
+                        {
+                            "ResponseParameters": {
+                                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                "method.response.header.Access-Control-Allow-Methods": {
+                                    "Fn::Join": ["", [
+                                        "'",
+                                        {
+                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateNameHttpMethod"]
+                                        },
+                                        ",",
+                                        "OPTIONS",
+                                        "'"
+                                    ]]
+                                },
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,Pragma,Cache-Control,If-Modified-Since'"
+                            },
+                            "StatusCode": "200"
+                        }
+                    ],
+                    "PassthroughBehavior": "NEVER",
+                    "RequestTemplates": {
+                        "application/json": "{\"statusCode\": \"200\"}"
+                    },
+                    "Type": "AWS",
+                    "Uri": {
+                        "Fn::Join": [":", [
+                            "arn",
+                            "aws",
+                            "apigateway",
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            "lambda",
+                            {
+                                "Fn::Join": ["/", [
+                                    "path",
+                                    "2015-03-31",
+                                    "functions",
+                                    {
+                                        "Fn::GetAtt": ["NameGeneratorFunction", "Arn"]
+                                    },
+                                    "invocations"
+                                ]]
+                            }
+                        ]]
+                    }
+                },
+                "MethodResponses": [
+                    {
+                        "ResponseParameters": {
+                            "method.response.header.Access-Control-Allow-Origin": false,
+                            "method.response.header.Access-Control-Allow-Methods": false,
+                            "method.response.header.Access-Control-Allow-Headers": false
+                        },
+                        "StatusCode": "200"
+                    }
+                ]
+            }
+        },
+        "NameGeneratorAPIGenerateNameResourceOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+                "AuthorizationType": "NONE",
+                "ResourceId": {
+                    "Ref": "NameGeneratorAPIGenerateNameResource"
+                },
+                "RestApiId": {
+                    "Ref": "NameGeneratorAPI"
+                },
+                "HttpMethod": "OPTIONS",
+                "Integration": {
+                    "IntegrationResponses": [
+                        {
+                            "ResponseParameters": {
+                                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                "method.response.header.Access-Control-Allow-Methods": {
+                                    "Fn::Join": ["", [
+                                        "'",
+                                        {
+                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateNameHttpMethod"]
+                                        },
+                                        ",",
+                                        "OPTIONS",
+                                        "'"
+                                    ]]
+                                },
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,Pragma,Cache-Control,If-Modified-Since'"
+                            },
+                            "StatusCode": "200"
+                        }
+                    ],
+                    "PassthroughBehavior": "NEVER",
+                    "RequestTemplates": {
+                        "application/json": "{\"statusCode\": \"200\"}"
+                    },
+                    "Type": "MOCK"
+                },
+                "MethodResponses": [
+                    {
+                        "ResponseParameters": {
+                            "method.response.header.Access-Control-Allow-Origin": false,
+                            "method.response.header.Access-Control-Allow-Methods": false,
+                            "method.response.header.Access-Control-Allow-Headers": false
+                        },
+                        "StatusCode": "200"
+                    }
+                ]
+            }
+        }
+	},
+    "Outputs": {
+        
+    }
+}
