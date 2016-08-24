@@ -5,34 +5,21 @@
     load the word lists into DynamoDB.
 """
 from __future__ import print_function
-import urllib2, json
+import urllib2, json, traceback
 from random import shuffle
 import boto3, botocore
 
-word_list_url_base = "https://raw.githubusercontent.com/moduspwnens/unique-name-generator-api/master/"
-
-word_lists = {
-    "adjectives": "{}adjectives.txt".format(word_list_url_base),
-    "animals": "{}animals.txt".format(word_list_url_base)
-}
-
-def lambda_handler(event, context):
-    print(event)
-    
-    configuration_table_name = event["ResourceProperties"]["ConfigurationTable"]
+def save_wordlist(configuration_table_name, word_list_string):
     
     word_list_config_item = {
-        "PartitionKey": "WordLists"
+        "WordListName": "Default"
     }
     
-    for each_word_list_name in word_lists.keys():
-        each_word_list_url = word_lists[each_word_list_name]
-        
-        each_word_list_string = urllib2.urlopen(each_word_list_url).read()
-        each_word_list = each_word_list_string.strip().split("\n")
-        shuffle(each_word_list)
-        
-        word_list_config_item[each_word_list_name] = each_word_list
+    word_list = word_list_string.strip().split("\n")
+    print("Found {:d} words in word list from CloudFormation template.".format(len(word_list)))
+    shuffle(word_list)
+    
+    word_list_config_item["List"] = word_list
     
     
     configuration_table = boto3.resource("dynamodb").Table(configuration_table_name)
@@ -40,22 +27,42 @@ def lambda_handler(event, context):
     try:
         response = configuration_table.put_item(
             Item = word_list_config_item,
-            ConditionExpression = boto3.dynamodb.conditions.Attr("PartitionKey").not_exists(),
+            ConditionExpression = boto3.dynamodb.conditions.Attr("WordListName").not_exists(),
             ReturnConsumedCapacity = "TOTAL"
         )
         
         consumed_capacity_units = response["ConsumedCapacity"]["CapacityUnits"]
     
-        print("Consumed {} capacity units.".format(consumed_capacity_units))
+        print("Consumed {} write capacity units.".format(consumed_capacity_units))
         
     except botocore.exceptions.ClientError as e:
         if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
-            print("Word lists already saved.")
+            print("Word list already saved.")
         else:
             raise
     
+    
+
+def lambda_handler(event, context):
+    print("Event: {}".format(json.dumps(event)))
+    
+    status_string = "SUCCESS"
+    
+    if event["RequestType"] == "Create":
+    
+        try:
+            save_wordlist(
+                event["ResourceProperties"]["ConfigurationTable"],
+                event["ResourceProperties"]["WordList"]
+            )
+            wordlist_saved = True
+    
+        except Exception as e:
+            print(traceback.format_exc())
+            status_string = "FAILED"
+    
     response_object = {
-        "Status": "SUCCESS",
+        "Status": status_string,
         "Reason": "See the details in CloudWatch Log Stream: " + context.log_stream_name,
         "PhysicalResourceId": context.log_stream_name,
         "StackId": event["StackId"],
@@ -72,4 +79,4 @@ def lambda_handler(event, context):
     request.get_method = lambda: "PUT"
     opener.open(request)
     
-    return response_object
+    return {}
