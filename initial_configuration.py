@@ -1,82 +1,128 @@
 """
-    initial_configuration.py
-    
-    This Lambda function is run during the CloudFormation stack creation to 
+    This function is run during the CloudFormation stack creation to 
     load the word lists into DynamoDB.
 """
 from __future__ import print_function
-import urllib2, json, traceback
+import urllib2, json, traceback, time
 from random import shuffle
-import boto3, botocore
+import boto3
+import cfnresponse
 
-def save_wordlist(configuration_table_name, word_list_string):
-    
-    word_list_config_item = {
-        "WordListName": "Default"
-    }
+sqs_send_batch_size_max = 10
+queue_purge_delay_seconds = 60
+max_sqs_tries = 5
+
+def save_word_list(word_list_queue_url, word_list_string, shuffle_word_list):
     
     word_list = word_list_string.strip().split("\n")
     print("Found {:d} words in word list from CloudFormation template.".format(len(word_list)))
-    shuffle(word_list)
     
-    word_list_config_item["List"] = word_list
+    if shuffle_word_list:
+        print("Shuffling word list.")
+        shuffle(word_list)
+    else:
+        print("Sorting word list.")
+        word_list.sort()
+    
+    print("Word List SQS Queue URL: {}".format(word_list_queue_url))
+    
+    # Get reference to our SQS queue.
+    queue = boto3.resource("sqs").Queue(word_list_queue_url)
+    
+    # Purge the queue if it already has messages.
+    if int(queue.attributes["ApproximateNumberOfMessages"]) > 0:
+        print("Queue already contains messages. Purging them.")
+        queue.purge()
+        time.sleep(queue_purge_delay_seconds)
+    
+    remaining_words_to_add = word_list
+    
+    sqs_attempt_count = 0
+    while sqs_attempt_count < max_sqs_tries:
+        
+        # Try to add the words. Keep list of words that failed to add (for whatever reason).
+        remaining_words_to_add = add_words_to_queue(queue, remaining_words_to_add)
+        
+        sqs_attempt_count += 1
+    
+    if len(remaining_words_to_add) > 0:
+        raise Exception("After {:d} attempt(s), {:d} words still not added to queue.".format(max_sqs_tries, len(remaining_words_to_add)))
     
     
-    configuration_table = boto3.resource("dynamodb").Table(configuration_table_name)
+
+def add_words_to_queue(queue, word_list):
     
-    try:
-        response = configuration_table.put_item(
-            Item = word_list_config_item,
-            ConditionExpression = boto3.dynamodb.conditions.Attr("WordListName").not_exists(),
-            ReturnConsumedCapacity = "TOTAL"
+    # Split the word list into batches to maximize efficiency.
+    word_list_batches = []
+    
+    new_word_list_batch = []
+    for i, each_word in enumerate(word_list):
+        new_word_list_batch.append(each_word)
+        
+        if i % sqs_send_batch_size_max == sqs_send_batch_size_max - 1:
+            
+            # This batch is full. Add it to the list and reset the current batch.
+            word_list_batches.append(new_word_list_batch)
+            new_word_list_batch = []
+    
+    # Add last batch (if not empty).
+    if len(new_word_list_batch):
+        word_list_batches.append(new_word_list_batch)
+    
+    failed_words = []
+    
+    # Add the words in each batch to the word list queue.
+    for i, each_word_batch in enumerate(word_list_batches):
+        
+        new_entries_list = []
+        
+        for j, each_word in enumerate(each_word_batch):
+            new_entries_list.append({
+                "Id": "{:d}".format(j),
+                "MessageBody": json.dumps({
+                    "word": each_word,
+                    "count": 1
+                })
+            })
+        
+        print("Adding word batch {:d}/{:d} to word list queue.".format(i+1, len(word_list_batches)))
+        
+        response = queue.send_messages(
+            Entries = new_entries_list
         )
         
-        consumed_capacity_units = response["ConsumedCapacity"]["CapacityUnits"]
-    
-        print("Consumed {} write capacity units.".format(consumed_capacity_units))
+        request_fail_count = 0
         
-    except botocore.exceptions.ClientError as e:
-        if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
-            print("Word list already saved.")
-        else:
-            raise
+        for each_record in response.get("Failed", []):
+            request_fail_count += 1
+            failed_word_index = int(each_record["Id"])
+            failed_words.append(each_word_batch[failed_word_index])
     
+    # Return words that were unable to be added.
+    return failed_words
     
 
 def lambda_handler(event, context):
     print("Event: {}".format(json.dumps(event)))
     
-    status_string = "SUCCESS"
+    cfn_response_type = cfnresponse.SUCCESS
     
     if event["RequestType"] == "Create":
     
         try:
-            save_wordlist(
-                event["ResourceProperties"]["ConfigurationTable"],
-                event["ResourceProperties"]["WordList"]
+            save_word_list(
+                event["ResourceProperties"]["WordListQueueUrl"],
+                event["ResourceProperties"]["WordList"],
+                event["ResourceProperties"]["ShuffleWordList"] != "No"
             )
-            wordlist_saved = True
     
         except Exception as e:
             print(traceback.format_exc())
-            status_string = "FAILED"
+            cfn_response_type = cfnresponse.FAILED
     
-    response_object = {
-        "Status": status_string,
-        "Reason": "See the details in CloudWatch Log Stream: " + context.log_stream_name,
-        "PhysicalResourceId": context.log_stream_name,
-        "StackId": event["StackId"],
-        "RequestId": event["RequestId"],
-        "LogicalResourceId": event["LogicalResourceId"],
-        "Data": {}
-    }
-    
-    print("Response: {}".format(json.dumps(response_object)))
-    
-    opener = urllib2.build_opener(urllib2.HTTPHandler)
-    request = urllib2.Request(event["ResponseURL"], data=json.dumps(response_object))
-    request.add_header("Content-Type", "")
-    request.get_method = lambda: "PUT"
-    opener.open(request)
-    
-    return {}
+    cfnresponse.send(
+        event,
+        context,
+        cfn_response_type,
+        {}
+    )
