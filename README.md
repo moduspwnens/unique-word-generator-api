@@ -72,7 +72,7 @@ Prices represent the cost of deploying the API via the CloudFormation template.
 | AWS API Gateway          | $0.000175     | Yes - Expires after 12 months |
 | **TOTAL**                | **$0.0004292**|                               |
 
-Yes, it will cost less than a penny to deploy if you free tier allowance is already consumed. Otherwise, there are no costs.
+Yes, it will cost less than a penny to deploy if your free tier allowance is already consumed. Otherwise, there are no costs.
 
 ### Operation
 
