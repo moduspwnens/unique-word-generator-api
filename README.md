@@ -37,15 +37,15 @@ I partially decided to do this as an exercise with AWS services, but also had th
   * No operating system maintenance, patching, firewall management
 * API should have no strict scaling limits
   * Ideally, the limits should be whatever is the maximum the supporting services allow.
-* No fixed costs
+* Minimal fixed costs
   * Utilizes only AWS services that fit entirely within the free tier perpetually when idle
 * IAM permissions should be as restrictive as possible while allowing necessary functionality
-* Design should follow AWS best design practices when possible
+* Design should follow AWS best practices when possible
 * Per-usage costs minimized
 * Deployable entirely from a **single CloudFormation template**
 * Absolutely no possibility of duplicate names despite concurrent requests
 * API should return appropriate status codes
-* API should be reasonably fast (<400 ms on average)
+* API should be reasonably fast (<500 ms on average)
 * API should allow easy curling of resulting name from a shell script
 
 The result is an API that:
@@ -90,12 +90,23 @@ That comes out to a little over 140,000 API requests before you owe your first d
 
 ### Monthly Static Costs
 
-There are no static costs.
+Note that your first 25 read and write capacity units are free each month.
+
+| Service / Operation                         | Cost             | Free Tier Eligible            |
+|---------------------------------------------|------------------|-------------------------------|
+| Amazon DynamoDB - Write Capacity Month (1)  | $0.468           | Yes - No expiration           |
+| Amazon DynamoDB - Read Capacity Month (1)   | $0.0936          | Yes - No expiration           |
+| **TOTAL**                                   | **$0.5616**      |                               |
+
+This represents the minimum / default throughput setting - 1 read/write per second. Each API request requires one of each and DynamoDB's perpetual free tier allows 25 of each. For every request per second you want the API to support beyond the free tier, the cost is $0.5616 per request per second if provisioned for the entire month.
 
 ## Known Issues
 
-**SQS doesn't guarantee a message is delivered only once.**  
-This means by relying on SQS completely, it's possible a name might be returned more than once.
+**API doesn't return appropriate error codes / messages.**  
+Not yet implemented.
+
+**No automated build method for rebuilding CloudFormation values from source scripts / values.**
+Not yet implemented.
 
 ## FAQ
 
@@ -105,6 +116,9 @@ Absolutely! See Amazon's documentation [here](http://docs.aws.amazon.com/apigate
 **What happens when it runs out of names?**  
 It starts over and adds a counter after, so instead of "wallaby", you'd receive "wallaby2".
 
+**What happens if I exceed the provisioned max requests per second I choose?**  
+Requests will return more slowly, or return an error if they get too slow. This is based on DynamoDB's throttling behavior and the Python AWS SDK (boto3)'s retry behavior.
+
 **If I choose not to shuffle the list, will I get the names in order?**  
 Only approximately. This uses Amazon SQS on the backend so this is explained in the [FAQ](https://aws.amazon.com/sqs/faqs/) regarding first-in first-out (FIFO) of messages.
 
@@ -112,5 +126,8 @@ Only approximately. This uses Amazon SQS on the backend so this is explained in 
 Yes. It uses no unique account-specific resources. Just choose a different stack name when you deploy next time.
 
 **How scalable is it?**  
-It scales pretty well.
+It scales pretty well. The only limiting factor is the provisioned capacity for DynamoDB, but you can scale that up and down as necessary. Each of the services tend to have limits, too, so if you push it, you'll end up hitting the service limits of your AWS account. Those can usually be raised just by asking them.
 
+## Contact
+
+You can contact me at benn@linger.com.
