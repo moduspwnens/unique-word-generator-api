@@ -105,7 +105,7 @@ This represents the minimum / default throughput setting - 1 read/write per seco
 **API doesn't return appropriate error codes / messages.**  
 Not yet implemented.
 
-**No automated build method for rebuilding CloudFormation values from source scripts / values.**
+**No automated build method for rebuilding CloudFormation values from source scripts / values.**  
 Not yet implemented.
 
 ## FAQ
