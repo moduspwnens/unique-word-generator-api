@@ -125,6 +125,9 @@ Not yet implemented.
 **No automated build method for rebuilding CloudFormation values from source scripts / values.**  
 Not yet implemented.
 
+**Used word list table increases in size indefinitely.**  
+The cost is minimal, as each word reservation's size will be 12 bytes plus the length of the word in UTF-8 encoded bytes. DynamoDB's perpetual free tier covers the first 25GB. Still, it's not good design for it to increase forever as it is utilized.
+
 ## FAQ
 
 **Will I ever get the same word more than once?**  
@@ -153,6 +156,9 @@ Absolutely! See Amazon's documentation [here](http://docs.aws.amazon.com/apigate
 
 **How scalable is it?**  
 It scales pretty well. The only limiting factor is the provisioned capacity for DynamoDB, but you can scale that up and down as necessary. Each of the services tend to have limits, too, so if you push it, you'll end up hitting the service limits of your AWS account. Those can usually be raised just by asking them.
+
+**What if I want it to scale up and down automatically based on usage?**  
+The only hurdle in your way is DynamoDB, which requires you to set provisioned capacity ahead of time. For a general use case, I recommend [channl/dynamodb-lambda-autoscale](https://github.com/channl/dynamodb-lambda-autoscale). It's also of "serverless" design and runs every minute to adjust your DynamoDB provisioned capacity based on configuration you give it (or the default).
 
 ## Roadmap
 
