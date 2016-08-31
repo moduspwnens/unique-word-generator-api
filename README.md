@@ -53,7 +53,7 @@ I partially decided to do this as an exercise with AWS services, but also had th
 * API should use a *serverless* infrastructure
   * No operating system maintenance, patching, firewall management
 * API should have no strict scaling limits
-  * Ideally, the limits should be whatever is the maximum the supporting services allow.
+  * Ideally, the limits should be whatever is the maximum the supporting services allow
 * Minimal fixed costs
   * Utilizes only AWS services that fit entirely within the free tier perpetually when idle
 * IAM permissions should be as restrictive as possible while allowing necessary functionality
@@ -97,9 +97,9 @@ Now let's break down the per-request costs.
 
 | Service / Operation                               | Cost             | Free Tier Eligible            |
 |---------------------------------------------------|------------------|-------------------------------|
-| AWS Simple Queue Service                          | $0.0000015       | Yes - No expiration           |
-| AWS Lambda                                        | $0.000002084     | Yes - No expiration           |
-| AWS API Gateway - Requests                        | $0.0000035       | Yes - Expires after 12 months |
+| AWS Simple Queue Service (3 requests)             | $0.0000015       | Yes - No expiration           |
+| AWS Lambda (320MB / 400ms)                        | $0.000002084     | Yes - No expiration           |
+| AWS API Gateway - Request                         | $0.0000035       | Yes - Expires after 12 months |
 | AWS API Gateway - Data Out                        | $0.0000000495    | No                            |
 | **Total Per Request** (if free tier already used) | **$0.0000071335**|                               |
 
@@ -144,6 +144,12 @@ Yes. It uses no unique account-specific resources. Just choose a different stack
 
 **How scalable is it?**  
 It scales pretty well. The only limiting factor is the provisioned capacity for DynamoDB, but you can scale that up and down as necessary. Each of the services tend to have limits, too, so if you push it, you'll end up hitting the service limits of your AWS account. Those can usually be raised just by asking them.
+
+## Roadmap
+
+* Fix known issues
+* Add basic web-based front end that shows usage examples
+* Support multiple "unique namespaces" from a single API
 
 ## Contact
 
