@@ -122,9 +122,6 @@ This represents the minimum / default throughput setting - 1 read/write per seco
 **API doesn't return appropriate error codes / messages.**  
 Not yet implemented.
 
-**No automated build method for rebuilding CloudFormation values from source scripts / values.**  
-Not yet implemented.
-
 **Used word list table increases in size indefinitely.**  
 The cost is minimal, as each word reservation's size will be 12 bytes plus the length of the word in UTF-8 encoded bytes. DynamoDB's perpetual free tier covers the first 25GB. Still, it's not good design for it to increase forever as it is utilized.
 
