@@ -25,9 +25,26 @@ Using this API, you can now have:
 
 Now your cluster of webservers has names that are unique, easy to remember, and easy to spell.
 
+## Demo
+
+There's no graphical user interface implemented, but I've deployed an API here:
+* https://animals.bennlinger.com/v1/generate-name
+
+Open it in your browser (or curl it from bash) for a unique animal. Try again. Another animal! You'll always get a unique animal (or an animal with a unique counter after it runs out of animals--e.g. kangaroo5).
+
 ## How to use
 
-Click the "Launch Stack" button here (not yet implemented).
+Click this button and follow the prompts to launch the stack.
+
+[![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=unique-name-generator1&templateURL=https://s3.amazonaws.com/bennlinger-public-site/unique-name-generator-api/unique-name-api.json)
+
+After the stack's status changes to CREATE_COMPLETE, select it and then click the Outputs tab. There's just one, and its value is the URL for your API. You can open this in a web browser or curl the result directly into your bash script like this:
+
+```
+#!/bin/bash
+$ export NEW_ANIMAL=$(curl -s https://your-api-url-here)
+$ echo "$NEW_ANIMAL"
+```
 
 ## Design goals
 
