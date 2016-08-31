@@ -127,8 +127,11 @@ Not yet implemented.
 
 ## FAQ
 
-**Can I use my own domain for the API?**  
-Absolutely! See Amazon's documentation [here](http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
+**Will I ever get the same word more than once?**  
+No. This has been designed to never happen.
+
+**Will I always get every word in the list if I make enough requests?**  
+Not necessarily. If you cancel a request before it completes or the backend has trouble talking to DynamoDB, it could result in a word being removed from the queue without being returned for a request.
 
 **What happens when it runs out of words?**  
 It starts over and adds a counter after, so instead of "wallaby", you'd receive "wallaby2".
@@ -144,6 +147,9 @@ Yes. It uses no unique account-specific resources. Just choose a different stack
 
 **Why am I not getting ~500ms responses with my API?**  
 If you're not exceeding your provisioned max requests (see above), it's likely just warming up. Lambda and DynamoDB both have "warm up" periods which you might notice on your first time accessing the API after some period. Generally after ten seconds or so, you should be getting response times in the 400-500ms range.
+
+**Can I use my own domain for the API?**  
+Absolutely! See Amazon's documentation [here](http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
 
 **How scalable is it?**  
 It scales pretty well. The only limiting factor is the provisioned capacity for DynamoDB, but you can scale that up and down as necessary. Each of the services tend to have limits, too, so if you push it, you'll end up hitting the service limits of your AWS account. Those can usually be raised just by asking them.
