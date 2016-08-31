@@ -142,6 +142,9 @@ Only approximately. This uses Amazon SQS on the backend so this is explained in 
 **Can I launch more than one API in the same AWS account?**  
 Yes. It uses no unique account-specific resources. Just choose a different stack name when you deploy next time.
 
+**Why am I not getting ~500ms responses with my API?**  
+If you're not exceeding your provisioned max requests (see above), it's likely just warming up. Lambda and DynamoDB both have "warm up" periods which you might notice on your first time accessing the API after some period. Generally after ten seconds or so, you should be getting response times in the 400-500ms range.
+
 **How scalable is it?**  
 It scales pretty well. The only limiting factor is the provisioned capacity for DynamoDB, but you can scale that up and down as necessary. Each of the services tend to have limits, too, so if you push it, you'll end up hitting the service limits of your AWS account. Those can usually be raised just by asking them.
 
