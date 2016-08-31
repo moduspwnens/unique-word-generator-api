@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "An API for generating unique names.",
+	"Description": "An API for generating a unique word from a predefined list.",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -43,8 +43,8 @@
 	"Mappings": {
 		"StaticVariables": {
 			"Main": {
-                "GenerateNameHttpMethod": "GET",
-                "GenerateNameMethodPathPart": "generate-name",
+                "GenerateWordHttpMethod": "GET",
+                "GenerateWordMethodPathPart": "generate-word",
                 "StageName": "v1",
                 "WordList": "aardvark\naardwolf\nabalone\nabyssiniancat\nabyssiniangroundhornbill\nacaciarat\nachillestang\nacornbarnacle\nacornweevil\nacornwoodpecker\nacouchi\nadamsstaghornedbeetle\naddax\nadder\nadeliepenguin\nadmiralbutterfly\nadouri\naegeancat\naffenpinscher\nafghanhound\nafricanaugurbuzzard\nafricanbushviper\nafricancivet\nafricanclawedfrog\nafricanelephant\nafricanfisheagle\nafricangoldencat\nafricangroundhornbill\nafricanharrierhawk\nafricanhornbill\nafricanjacana\nafricanmolesnake\nafricanparadiseflycatcher\nafricanpiedkingfisher\nafricanporcupine\nafricanrockpython\nafricanwildcat\nafricanwilddog\nagama\nagouti\naidi\nairedale\nairedaleterrier\nakitainu\nalabamamapturtle\nalaskajingle\nalaskanhusky\nalaskankleekai\nalaskanmalamute\nalbacoretuna\nalbatross\nalbertosaurus\nalbino\naldabratortoise\nallensbigearedbat\nalleycat\nalligator\nalligatorgar\nalligatorsnappingturtle\nallosaurus\nalpaca\nalpinegoat\nalpineroadguidetigerbeetle\naltiplanochinchillamouse\namazondolphin\namazonparrot\namazontreeboa\namberpenshell\nambushbug\namericanalligator\namericanavocet\namericanbadger\namericanbittern\namericanblackvulture\namericanbobtail\namericanbulldog\namericancicada\namericancrayfish\namericancreamdraft\namericancrocodile\namericancrow\namericancurl\namericangoldfinch\namericanindianhorse\namericankestrel\namericanlobster\namericanmarten\namericanpainthorse\namericanquarterhorse\namericanratsnake\namericanredsquirrel\namericanriverotter\namericanrobin\namericansaddlebred\namericanshorthair\namericantoad\namericanwarmblood\namericanwigeon\namericanwirehair\namethystgemclam\namethystinepython\namethystsunbird\nammonite\namoeba\namphibian\namphiuma\namurminnow\namurratsnake\namurstarfish\nanaconda\nanchovy\nandalusianhorse\nandeancat\nandeancockoftherock\nandeancondor\nanemone\nanemonecrab\nanemoneshrimp\nangelfish\nangelwingmussel\nanglerfish\nangora\nangwantibo\nanhinga\nankole\nankolewatusi\nannashummingbird\nannelid\nannelida\nanole\nanophelesmosquito\nant\nantarcticfurseal\nantarcticgiantpetrel\nantbear\nanteater\nantelope\nantelopegroundsquirrel\nantipodesgreenparakeet\nantlion\nanura\naoudad\napatosaur\nape\naphid\napisdorsatalaboriosa\naplomadofalcon\nappaloosa\naquaticleech\narabianhorse\narabianoryx\narabianwildcat\naracari\narachnid\narawana\narchaeocete\narchaeopteryx\narcherfish\narcticduck\narcticfox\narctichare\narcticseal\narcticwolf\nargali\nargentinehornedfrog\nargentineruddyduck\nargusfish\narieltoucan\narizonaalligatorlizard\narkshell\narmadillo\narmedcrab\narmednylonshrimp\narmyant\narmyworm\narrowana\narrowcrab\narrowworm\narthropods\naruanas\nasianconstablebutterfly\nasiandamselfly\nasianelephant\nasianlion\nasianpiedstarling\nasianporcupine\nasiansmallclawedotter\nasiantrumpetfish\nasianwaterbuffalo\nasiaticgreaterfreshwaterclam\nasiaticlesserfreshwaterclam\nasiaticmouflon\nasiaticwildass\nasp\nass\nassassinbug\nastarte\nastrangiacoral\natlanticblackgoby\natlanticbluetang\natlanticridleyturtle\natlanticsharpnosepuffer\natlanticspadefish\natlasmoth\nattwatersprairiechicken\nauk\nauklet\naurochs\naustraliancattledog\naustraliancurlew\naustralianfreshwatercrocodile\naustralianfurseal\naustraliankelpie\naustraliankestrel\naustralianshelduck\naustraliansilkyterrier\naustrianpinscher\navians\navocet\naxisdeer\naxolotl\nayeaye\naztecant\nazurevase\nazurevasesponge\nazurewingedmagpie\nbabirusa\nbaboon\nbackswimmer\nbactrian\nbadger\nbagworm\nbaiji\nbaldeagle\nbaleenwhale\nballoonfish\nballpython\nbandicoot\nbangeltiger\nbantamrooster\nbanteng\nbarasinga\nbarasingha\nbarb\nbarbet\nbarebirdbat\nbarnacle\nbarnowl\nbarnswallow\nbarracuda\nbasenji\nbasil\nbasilisk\nbass\nbassethound\nbat\nbats\nbeagle\nbear\nbeardedcollie\nbeardeddragon\nbeauceron\nbeaver\nbedbug\nbedlingtonterrier\nbee\nbeetle\nbellfrog\nbellsnake\nbelugawhale\nbengaltiger\nbergerpicard\nbernesemountaindog\nbetafish\nbettong\nbichonfrise\nbighorn\nbighornedsheep\nbighornsheep\nbigmouthbass\nbilby\nbillygoat\nbinturong\nbird\nbirdofparadise\nbison\nbittern\nblackandtancoonhound\nblackbear\nblackbird\nblackbuck\nblackcrappie\nblackfish\nblackfly\nblackfootedferret\nblacklab\nblacklemur\nblackmamba\nblacknorwegianelkhound\nblackpanther\nblackrhino\nblackrussianterrier\nblackwidowspider\nblesbok\nblobfish\nblowfish\nblueandgoldmackaw\nbluebird\nbluebottle\nbluebottlejellyfish\nbluebreastedkookaburra\nbluefintuna\nbluefish\nbluegill\nbluejay\nbluemorphobutterfly\nblueshark\nbluet\nbluetickcoonhound\nbluetonguelizard\nbluewhale\nboa\nboaconstrictor\nboar\nbobcat\nbobolink\nbobwhite\nboilweevil\nbongo\nbonobo\nbooby\nbordercollie\nborderterrier\nborer\nborzoi\nboto\nboubou\nboutu\nbovine\nbrahmanbull\nbrahmancow\nbrant\nbream\nbrocketdeer\nbronco\nbrontosaurus\nbrownbear\nbrownbutterfly\nbubblefish\nbuck\nbuckeyebutterfly\nbudgie\nbufeo\nbuffalo\nbufflehead\nbug\nbull\nbullfrog\nbullmastiff\nbumblebee\nbunny\nbunting\nburro\nbushbaby\nbushsqueaker\nbustard\nbutterfly\nbuzzard\ncaecilian\ncaiman\ncaimanlizard\ncalf\ncamel\ncanadagoose\ncanary\ncanine\ncanvasback\ncapeghostfrog\ncapybara\ncaracal\ncardinal\ncaribou\ncarp\ncarpenterant\ncassowary\ncat\ncatbird\ncaterpillar\ncatfish\ncats\ncattle\ncaudata\ncavy\ncentipede\ncero\nchafer\nchameleon\nchamois\nchanticleer\ncheetah\nchevrotain\nchick\nchickadee\nchicken\nchihuahua\nchimneyswift\nchimpanzee\nchinchilla\nchinesecrocodilelizard\nchipmunk\nchital\nchrysalis\nchrysomelid\nchuckwalla\nchupacabra\ncicada\ncirriped\ncivet\nclam\ncleanerwrasse\nclingfish\nclownanemonefish\nclumber\ncoati\ncob\ncobra\ncock\ncockatiel\ncockatoo\ncockerspaniel\ncockroach\ncod\ncoelacanth\ncollardlizard\ncollie\ncolt\ncomet\ncommabutterfly\ncommongonolek\nconch\ncondor\nconey\nconure\ncony\ncoot\ncooter\ncopepod\ncopperbutterfly\ncopperhead\ncoqui\ncoral\ncormorant\ncornsnake\ncorydorascatfish\ncottonmouth\ncottontail\ncougar\ncow\ncowbird\ncowrie\ncoyote\ncoypu\ncrab\ncrane\ncranefly\ncrayfish\ncreature\ncricket\ncrocodile\ncrocodileskink\ncrossbill\ncrow\ncrownofthornsstarfish\ncrustacean\ncub\ncuckoo\ncur\ncurassow\ncurlew\ncuscus\ncusimanse\ncuttlefish\ncutworm\ncygnet\ndachshund\ndaddylonglegs\ndairycow\ndalmatian\ndamselfly\ndanishswedishfarmdog\ndarklingbeetle\ndartfrog\ndarwinsfox\ndassie\ndassierat\ndavidstiger\ndeer\ndeermouse\ndegu\ndegus\ndeinonychus\ndesertpupfish\ndevilfish\ndeviltasmanian\ndiamondbackrattlesnake\ndikdik\ndikkops\ndingo\ndinosaur\ndiplodocus\ndipper\ndiscus\ndobermanpinscher\ndoctorfish\ndodo\ndodobird\ndoe\ndog\ndogfish\ndogwoodclubgall\ndogwoodtwigborer\ndolphin\ndonkey\ndorado\ndore\ndorking\ndormouse\ndotterel\ndouglasfirbarkbeetle\ndove\ndowitcher\ndrafthorse\ndragon\ndragonfly\ndrake\ndrever\ndromaeosaur\ndromedary\ndrongo\nduck\nduckbillcat\nduckbillplatypus\nduckling\ndugong\nduiker\ndungbeetle\ndungenesscrab\ndunlin\ndunnart\ndutchshepherddog\ndutchsmoushond\ndwarfmongoose\ndwarfrabbit\neagle\nearthworm\nearwig\neasternglasslizard\neasternnewt\neasteuropeanshepherd\neastrussiancoursinghounds\neastsiberianlaika\nechidna\neel\neelelephant\neeve\neft\negg\negret\neider\neidolonhelvum\nekaltadeta\neland\nelectriceel\nelephant\nelephantbeetle\nelephantseal\nelk\nelkhound\nelver\nemeraldtreeskink\nemperorpenguin\nemperorshrimp\nemu\nenglishpointer\nenglishsetter\nequestrian\nequine\nerin\nermine\nerne\neskimodog\nesok\nestuarinecrocodile\nethiopianwolf\neuropeanfiresalamander\neuropeanpolecat\newe\neyas\neyelashpitviper\neyra\nfairybluebird\nfairyfly\nfalcon\nfallowdeer\nfantail\nfanworms\nfattaileddunnart\nfawn\nfeline\nfennecfox\nferret\nfiddlercrab\nfieldmouse\nfieldspaniel\nfinch\nfinnishspitz\nfinwhale\nfireant\nfirebelliedtoad\nfirecrest\nfirefly\nfish\nfishingcat\nflamingo\nflatcoatretriever\nflatfish\nflea\nflee\nflicker\nflickertailsquirrel\nflies\nflounder\nfluke\nfly\nflycatcher\nflyingfish\nflyingfox\nflyinglemur\nflyingsquirrel\nfoal\nfossa\nfowl\nfox\nfoxhound\nfoxterrier\nfrenchbulldog\nfreshwatereel\nfrigatebird\nfrilledlizard\nfrillneckedlizard\nfritillarybutterfly\nfrog\nfrogmouth\nfruitbat\nfruitfly\nfugu\nfulmar\nfunnelweaverspider\nfurseal\ngadwall\ngalago\ngalah\ngalapagosalbatross\ngalapagosdove\ngalapagoshawk\ngalapagosmockingbird\ngalapagospenguin\ngalapagossealion\ngalapagostortoise\ngallinule\ngallowaycow\ngander\ngangesdolphin\ngannet\ngar\ngardensnake\ngarpike\ngartersnake\ngaur\ngavial\ngazelle\ngecko\ngeese\ngelada\ngelding\ngemsbok\ngemsbuck\ngenet\ngentoopenguin\ngerbil\ngerenuk\ngermanpinscher\ngermanshepherd\ngermanshorthairedpointer\ngermanspaniel\ngermanspitz\ngermanwirehairedpointer\ngharial\nghostshrimp\ngiantschnauzer\ngibbon\ngilamonster\ngiraffe\nglassfrog\nglobefish\nglowworm\ngnat\ngnatcatcher\ngnu\ngoa\ngoat\ngodwit\ngoitered\ngoldeneye\ngoldenmantledgroundsquirrel\ngoldenretriever\ngoldfinch\ngoldfish\ngonolek\ngoose\ngoosefish\ngopher\ngoral\ngordonsetter\ngorilla\ngoshawk\ngosling\ngossamerwingedbutterfly\ngourami\ngrackle\ngrasshopper\ngrassspider\ngrayfox\ngrayling\ngrayreefshark\ngraysquirrel\ngraywolf\ngreatargus\ngreatdane\ngreathornedowl\ngreatwhiteshark\ngrebe\ngreendarnerdragonfly\ngreyhounddog\ngrison\ngrizzlybear\ngrosbeak\ngroundbeetle\ngroundhog\ngrouper\ngrouse\ngrub\ngrunion\nguanaco\nguernseycow\nguillemot\nguineafowl\nguineapig\ngull\nguppy\ngypsymoth\ngyrfalcon\nhackee\nhaddock\nhadrosaurus\nhagfish\nhairstreak\nhairstreakbutterfly\nhake\nhalcyon\nhalibut\nhalicore\nhamadryad\nhamadryas\nhammerheadbird\nhammerheadshark\nhammerkop\nhamster\nhanumanmonkey\nhapuka\nhapuku\nharborporpoise\nharborseal\nhare\nharlequinbug\nharpseal\nharpyeagle\nharrier\nharrierhawk\nhart\nhartebeest\nharvestmen\nharvestmouse\nhatchetfish\nhawaiianmonkseal\nhawk\nhectorsdolphin\nhedgehog\nheifer\nhellbender\nhen\nherald\nherculesbeetle\nhermitcrab\nheron\nherring\nheterodontosaurus\nhind\nhippopotamus\nhoatzin\nhochstettersfrog\nhog\nhogget\nhoiho\nhoki\nhomalocephale\nhoneybadger\nhoneybee\nhoneycreeper\nhoneyeater\nhookersealion\nhoopoe\nhornbill\nhornedtoad\nhornedviper\nhornet\nhornshark\nhorse\nhorsechestnutleafminer\nhorsefly\nhorsemouse\nhorseshoebat\nhorseshoecrab\nhound\nhousefly\nhoverfly\nhowlermonkey\nhuemul\nhuia\nhuman\nhummingbird\nhumpbackwhale\nhusky\nhydatidtapeworm\nhydra\nhyena\nhylaeosaurus\nhypacrosaurus\nhypsilophodon\nhyracotherium\nhyrax\niaerismetalmark\nibadanmalimbe\niberianbarbel\niberianchiffchaff\niberianemeraldlizard\niberianlynx\niberianmidwifetoad\niberianmole\niberiannase\nibex\nibis\nibisbill\nibizanhound\niceblueredtopzebra\nicefish\nicelandgull\nicelandichorse\nicelandicsheepdog\nichidna\nichneumonfly\nichthyosaurs\nichthyostega\nicterinewarbler\niggypops\niguana\niguanodon\nilladopsis\nilsamochadegu\nimago\nimpala\nimperatorangel\nimperialeagle\nincatern\ninchworm\nindianabat\nindiancow\nindianelephant\nindianglassfish\nindianhare\nindianjackal\nindianpalmsquirrel\nindianpangolin\nindianrhinoceros\nindianringneckparakeet\nindianrockpython\nindianskimmer\nindianspinyloach\nindigobunting\nindigowingedparrot\nindochinahogdeer\nindochinesetiger\nindri\nindusriverdolphin\ninexpectatumpleco\ninganue\ninsect\nintermediateegret\ninvisiblerail\niraniangroundjay\niridescentshark\niriomotecat\nirishdraughthorse\nirishredandwhitesetter\nirishsetter\nirishterrier\nirishwaterspaniel\nirishwolfhound\nirrawaddydolphin\nirukandjijellyfish\nisabellineshrike\nisabellinewheatear\nislandcanary\nislandwhistler\nisopod\nitalianbrownbear\nitaliangreyhound\nivorybackedwoodswallow\nivorybilledwoodpecker\nivorygull\nizuthrush\njabiru\njackal\njackrabbit\njaeger\njaguar\njaguarundi\njanenschia\njapanesebeetle\njavalina\njay\njellyfish\njenny\njerboa\njoey\njohndory\njuliabutterfly\njumpingbean\njunco\njunebug\nkagu\nkakapo\nkakarikis\nkangaroo\nkarakul\nkatydid\nkawala\nkentrosaurus\nkestrel\nkid\nkilldeer\nkillerwhale\nkillifish\nkingbird\nkingfisher\nkinglet\nkingsnake\nkinkajou\nkiskadee\nkissingbug\nkite\nkitfox\nkitten\nkittiwake\nkitty\nkiwi\nkoala\nkoalabear\nkob\nkodiakbear\nkoi\nkomododragon\nkoodoo\nkookaburra\nkouprey\nkrill\nkronosaurus\nkudu\nkusimanse\nlabradorretriever\nlacewing\nladybird\nladybug\nlamb\nlamprey\nlangur\nlark\nlarva\nlaughingthrush\nlcont\nleafbird\nleafcutterant\nleafhopper\nleafwing\nleech\nlemming\nlemur\nleonberger\nleopard\nleopardseal\nleveret\nlhasaapso\nlice\nliger\nlightningbug\nlimpet\nlimpkin\nling\nlion\nlionfish\nlittlenightmonkeys\nlizard\nllama\nlobo\nlobster\nlocust\nloggerheadturtle\nlonghorn\nlonghornbeetle\nlongspur\nloon\nlorikeet\nloris\nlouse\nlovebird\nlowchen\nlunamoth\nlungfish\nlynx\nlynx \nmacaque\nmacaw\nmacropod\nmadagascarhissingroach\nmaggot\nmagpie\nmaiasaura\nmajungatholus\nmalamute\nmallard\nmaltesedog\nmamba\nmamenchisaurus\nmammal\nmammoth\nmanatee\nmandrill\nmangabey\nmanta\nmantaray\nmantid\nmantis\nmantisray\nmanxcat\nmara\nmarabou\nmarbledmurrelet\nmare\nmarlin\nmarmoset\nmarmot\nmarten\nmartin\nmassasauga\nmassospondylus\nmastiff\nmastodon\nmayfly\nmeadowhawk\nmeadowlark\nmealworm\nmeerkat\nmegalosaurus\nmegalotomusquinquespinosus\nmegaraptor\nmerganser\nmerlin\nmetalmarkbutterfly\nmetamorphosis\nmice\nmicrovenator\nmidge\nmilksnake\nmilkweedbug\nmillipede\nminibeast\nmink\nminnow\nmite\nmoa\nmockingbird\nmole\nmollies\nmollusk\nmolly\nmonarch\nmongoose\nmongrel\nmonkey\nmonkfish \nmonoclonius\nmontanoceratops\nmoorhen\nmoose\nmoray\nmorayeel\nmorpho\nmosasaur\nmosquito\nmoth\nmotmot\nmouflon\nmountaincat\nmountainlion\nmouse\nmouse/mice\nmousebird\nmudpuppy\nmule\nmullet\nmuntjac\nmurrelet\nmuskox\nmuskrat\nmussaurus\nmussel\nmustang\nmutt\nmyna\nmynah\nmyotis \nnabarlek\nnag\nnaga\nnagapies\nnakedmolerat\nnandine\nnandoo\nnandu\nnarwhal\nnarwhale\nnatterjacktoad\nnauplius\nnautilus\nneedlefish\nneedletail\nnematode\nnene\nneonblueguppy\nneonbluehermitcrab\nneondwarfgourami\nneonrainbowfish\nneonredguppy\nneontetra\nnerka\nnettlefish\nnewfoundlanddog\nnewt\nnewtnutria\nnightcrawler\nnighthawk\nnightheron\nnightingale\nnightjar\nnijssenissdwarfchihlid\nnilgai\nninebandedarmadillo\nnoctilio\nnoctule\nnoddy\nnoolbenger\nnortherncardinals\nnorthernelephantseal\nnorthernflyingsquirrel\nnorthernfurseal\nnorthernhairynosedwombat\nnorthernpike\nnorthernseahorse\nnorthernspottedowl\nnorwaylobster\nnorwayrat\nnubiangoat\nnudibranch\nnumbat\nnurseshark\nnutcracker\nnuthatch\nnutria\nnyala\nnymph\nocelot\noctopus\nokapi\nolingo\nolm\nopossum\norangutan\norca\noregonsilverspotbutterfly\noriole\noropendola\noropendula\noryx\nosprey\nostracod\nostrich\notter\novenbird\nowl\nowlbutterfly\nox\noxen\noxpecker\noyster\nozarkbigearedbat\npaca \npachyderm\npacificparrotlet\npaddlefish\npaintedladybutterfly\npanda\npangolin\npanther\npaperwasp\npapillon\nparakeet\nparrot\npartridge\npeacock\npeafowl\npeccary\npekingese\npelican\npelicinuspetrel\npenguin\nperch\nperegrinefalcon\npewee\nphalarope\npharaohhound\npheasant\nphoebe\nphoenix\npig\npigeon\npiglet\npika\npike\npikeperch \npilchard\npinemarten\npinkriverdolphin\npinniped\npintail\npipistrelle\npipit\npiranha\npitbull\npittabird\nplainsqueaker\nplankton\nplanthopper\nplatypus\nplover\npolarbear\npolecat\npolliwog\npolyp\npolyturator\npomeranian\npondskater\npony\npooch\npoodle\nporcupine\nporpoise\nportuguesemanofwar\npossum\nprairiedog\nprawn\nprayingmantid\nprayingmantis\nprimate\npronghorn\npseudodynerusquadrisectus\nptarmigan\npterodactyls\npterosaurs\npuffer\npufferfish\npuffin\npug\npullet\npuma\npupa\npupfish\npuppy\npurplemarten\npussycat\npygmy\npython\nquadrisectus\nquagga\nquahog\nquail\nqueenalexandrasbirdwing\nqueenalexandrasbirdwingbutterfly\nqueenant\nqueenbee\nqueenconch\nqueenslandgrouper\nqueenslandheeler\nqueensnake\nquelea\nquetzal\nquetzalcoatlus\nquillback\nquinquespinosus\nquokka\nquoll\nrabbit\nrabidsquirrel\nraccoon\nracer\nracerunner\nragfish\nrail\nrainbowfish\nrainbowlorikeet\nrainbowtrout\nram\nraptors\nrasbora\nrat\nratfish\nrattail\nrattlesnake\nraven\nray\nredhead\nredheadedwoodpecker\nredpoll\nredstart\nredtailedhawk\nreindeer\nreptile\nreynard\nrhea\nrhesusmonkey\nrhino\nrhinoceros\nrhinocerosbeetle\nrhodesianridgeback\nringtailedlemur\nringworm\nriograndeescuerzo\nroach\nroadrunner\nroan\nrobberfly\nrobin\nrockrat\nrodent\nroebuck\nroller\nrook\nrooster\nrottweiler\nsable\nsableantelope\nsablefish \nsaiga\nsakimonkey\nsalamander\nsalmon\nsaltwatercrocodile\nsambar\nsamoyeddog\nsandbarshark\nsanddollar\nsanderling\nsandpiper\nsapsucker\nsardine\nsawfish\nscallop\nscarab\nscarletibis\nscaup\nschapendoes\nschipperke\nschnauzer\nscorpion\nscoter\nscreamer\nseabird\nseagull\nseahog\nseahorse\nseal\nsealion\nseamonkey\nseaslug\nseaurchin\nsenegalpython\nseriema\nserpent\nserval\nshark\nshearwater\nsheep\nsheldrake\nshelduck\nshibainu\nshihtzu\nshorebird\nshoveler\nshrew\nshrike\nshrimp\nsiamang\nsiamesecat\nsiberiantiger\nsidewinder\nsifaka\nsilkworm\nsilverfish\nsilverfox\nsilversidefish\nsiskin\nskimmer\nskink\nskipper\nskua\nskunk\nskylark\nsloth\nslothbear\nslug\nsmelts\nsmew\nsnail\nsnake\nsnipe\nsnoutbutterfly\nsnowdog\nsnowgeese\nsnowleopard\nsnowmonkey\nsnowyowl\nsockeyesalmon\nsolenodon\nsolitaire\nsongbird\nsora\nsouthernhairnosedwombat\nsow\nspadefoot\nsparrow\nsphinx\nspider\nspidermonkey\nspiketail\nspittlebug\nsponge\nspoonbill\nspotteddolphin\nspreadwing\nspringbok\nspringpeeper\nspringtail\nsquab\nsquamata\nsqueaker\nsquid\nsquirrel\nstag\nstagbeetle\nstallion\nstarfish\nstarling\nsteed\nsteer\nstegosaurus\nstickinsect\nstickleback\nstilt\nstingray\nstinkbug\nstinkpot\nstoat\nstonefly\nstork\nstud\nsturgeon\nsugarglider\nsulphurbutterfly\nsunbear\nsunbittern\nsunfish\nswallow\nswallowtail\nswallowtailbutterfly\nswan\nswellfish\nswift\nswordfish\ntadpole\ntahr\ntakin\ntamarin\ntanager\ntapaculo\ntapeworm\ntapir\ntarantula\ntarpan\ntarsier\ntaruca\ntasmaniandevil\ntasmaniantiger\ntattler\ntayra\nteal\ntegus\nteledu\ntench\ntenrec\ntermite\ntern\nterrapin\nterrier\nthoroughbred\nthrasher\nthrip\nthrush\nthunderbird\nthylacine\ntick\ntiger\ntigerbeetle\ntigermoth\ntigershark\ntilefish\ntinamou\ntiti\ntitmouse\ntoad\ntoadfish\ntomtit \ntopi\ntortoise\ntoucan\ntowhee\ntragopan\ntreecreeper\ntrex\ntriceratops\ntrogon\ntrout\ntrumpeterbird\ntrumpeterswan\ntsetsefly\ntuatara\ntuna\nturaco\nturkey\nturnstone\nturtle\nturtledove\nuakari\nugandakob\nuintagroundsquirrel\nulyssesbutterfly\numbrellabird\numbrette\nunau\nungulate\nunicorn\nupupa\nurchin\nurial\nuromastyxmaliensis\nuromastyxspinipes\nurson\nurubu\nurus\nurutu\nurva\nutahprairiedog\nvampirebat\nvaquita\nveery\nvelociraptor\nvelvetcrab\nvelvetworm\nvenomoussnake\nverdin\nvervet\nviceroybutterfly\nvicuna\nviper\nviperfish\nvipersquid\nvireo\nvirginiaopossum\nvixen\nvole\nvolvox\nvulpesvelox\nvulpesvulpes\nvulture\nwalkingstick\nwallaby\nwallaroo\nwalleye\nwalrus\nwarbler\nwarthog\nwasp\nwaterboatman\nwaterbuck\nwaterbuffalo\nwaterbug\nwaterdogs\nwaterdragons\nwatermoccasin\nwaterstrider\nwaterthrush\nwattlebird\nwatussi\nwaxwing\nweasel\nweaverbird\nweevil\nwestafricanantelope\nwhale\nwhapuku\nwhelp\nwhimbrel\nwhippet\nwhippoorwill\nwhitebeakeddolphin\nwhiteeye\nwhitepelican\nwhiterhino\nwhitetaileddeer\nwhitetippedreefshark\nwhooper\nwhoopingcrane\nwidgeon\nwidowspider\nwildcat\nwildebeast\nwildebeest\nwillet\nwireworm\nwisent\nwobbegongshark\nwolf\nwolfspider\nwolverine\nwombat\nwoodborer\nwoodchuck\nwoodcock\nwoodnymphbutterfly\nwoodpecker\nwoodstorks\nwoollybearcaterpillar\nworm\nwrasse\nwreckfish\nwren\nwrenchbird\nwryneck\nwuerhosaurus\nwyvern\nxanclomys\nxanthareel\nxantus\nxantusmurrelet\nxeme\nxenarthra\nxenoposeidon\nxenops\nxenopterygii\nxenopus\nxenotarsosaurus\nxenurine\nxenurusunicinctus\nxerus\nxiaosaurus\nxinjiangovenator\nxiphias\nxiphiasgladius\nxiphosuran\nxoloitzcuintli\nxoni\nxrayfish\nxraytetra\nxuanhanosaurus\nxuanhuaceratops\nxuanhuasaurus\nyaffle\nyak\nyapok\nyardant\nyearling\nyellowbelliedmarmot\nyellowbellylizard\nyellowhammer\nyellowjacket\nyellowlegs\nyellowthroat\nyellowwhitebutterfly\nyeti\nynambu\nyorkshireterrier\nyosemitetoad\nyucker\nzander\nzanzibardaygecko\nzebra\nzebradove\nzebrafinch\nzebrafish\nzebralongwingbutterfly\nzebraswallowtailbutterfly\nzebratailedlizard\nzebu\nzenaida\nzeren\nzethusspinipes\nzethuswasp\nzigzagsalamander\nzonetailedpigeon\nzooplankton\nzopilote\nzorilla"
 			}
@@ -85,7 +85,7 @@
 		"ConfigurationSetupFunction": {
 			"Type": "AWS::Lambda::Function",
 			"Properties": {
-                "Description": "Performs initial setup of unique name generator.",
+                "Description": "Performs initial setup of unique word generator.",
 				"Handler": "index.lambda_handler",
                 "MemorySize": 1024,
 				"Role": {
@@ -312,14 +312,14 @@
                 "ConfigurationSetupRoleActions"
             ]
 		},
-		"NameGeneratorFunction": {
+		"WordGeneratorFunction": {
 			"Type": "AWS::Lambda::Function",
 			"Properties": {
                 "Description": "Responds to API requests for the unique name generator.",
 				"Handler": "index.lambda_handler",
                 "MemorySize": 320,
 				"Role": {
-					"Fn::GetAtt": ["NameGeneratorRole", "Arn"]
+					"Fn::GetAtt": ["WordGeneratorRole", "Arn"]
 				},
 				"Code": {
 					"ZipFile": {
@@ -417,7 +417,7 @@
 				"Timeout": "60"
 			}
 		},
-		"NameGeneratorRole": {
+		"WordGeneratorRole": {
 			"Type": "AWS::IAM::Role",
 			"Properties": {
 				"AssumeRolePolicyDocument": {
@@ -433,7 +433,7 @@
 				"Path": "/"
 			}
 		},
-        "NameGeneratorRoleActions": {
+        "WordGeneratorRoleActions": {
             "Type": "AWS::IAM::ManagedPolicy",
             "Properties": {
                 "PolicyDocument": {
@@ -457,7 +457,7 @@
                                     "Fn::Join": ["", [
                                         "/aws/lambda/",
                                         {
-                                            "Ref": "NameGeneratorFunction"
+                                            "Ref": "WordGeneratorFunction"
                                         }
                                     ]]
                                 },
@@ -506,37 +506,37 @@
                     }]
 				},
                 "Roles": [
-                    { "Ref": "NameGeneratorRole" }
+                    { "Ref": "WordGeneratorRole" }
                 ]
             }
         },
-        "NameGeneratorApi": {
+        "WordGeneratorApi": {
             "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
-                "Name": "NameGenerator",
+                "Name": "WordGenerator",
                 "Description": "An API for generating unique names."
             }
         },
-        "NameGeneratorApiGenerateNameResource": {
+        "WordGeneratorApiGenerateNameResource": {
             "Type": "AWS::ApiGateway::Resource",
             "Properties": {
                 "ParentId": {
-                    "Fn::GetAtt": ["NameGeneratorApi", "RootResourceId"]
+                    "Fn::GetAtt": ["WordGeneratorApi", "RootResourceId"]
                 },
                 "PathPart": {
-                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateNameMethodPathPart"]
+                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordMethodPathPart"]
                 },
                 "RestApiId": {
-                    "Ref": "NameGeneratorApi"
+                    "Ref": "WordGeneratorApi"
                 }
             }
         },
-        "NameGeneratorApiLambdaPermission": {
+        "WordGeneratorApiLambdaPermission": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "Action": "lambda:InvokeFunction",
                 "FunctionName": {
-                    "Ref": "NameGeneratorFunction"
+                    "Ref": "WordGeneratorFunction"
                 },
                 "Principal": "apigateway.amazonaws.com",
                 "SourceArn": {
@@ -553,35 +553,37 @@
                         {
                             "Fn::Join": ["/", [
                                 {
-                                    "Ref": "NameGeneratorApi"
+                                    "Ref": "WordGeneratorApi"
                                 },
                                 "*",
                                 {
-                                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateNameHttpMethod"]
+                                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
                                 },
-                                "generate-name"
+                                {
+                                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordMethodPathPart"]
+                                }
                             ]]
                         }
                     ]]
                 }
             },
             "DependsOn": [
-                "NameGeneratorRoleActions"
+                "WordGeneratorRoleActions"
             ]
         },
-        "NameGeneratorApiGenerateNameResourceMainMethod": {
+        "WordGeneratorApiGenerateNameResourceMainMethod": {
             "Type": "AWS::ApiGateway::Method",
             "Properties": {
                 "AuthorizationType": "NONE",
                 "ResourceId": {
-                    "Ref": "NameGeneratorApiGenerateNameResource"
+                    "Ref": "WordGeneratorApiGenerateNameResource"
                 },
                 "RestApiId": {
-                    "Ref": "NameGeneratorApi"
+                    "Ref": "WordGeneratorApi"
                 },
                 "HttpMethod": 
                 {
-                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateNameHttpMethod"]
+                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
                 },
                 "Integration": {
                     "IntegrationHttpMethod": "POST",
@@ -593,7 +595,7 @@
                                     "Fn::Join": ["", [
                                         "'",
                                         {
-                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateNameHttpMethod"]
+                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
                                         },
                                         ",",
                                         "OPTIONS",
@@ -648,7 +650,7 @@
                                     "2015-03-31",
                                     "functions",
                                     {
-                                        "Fn::GetAtt": ["NameGeneratorFunction", "Arn"]
+                                        "Fn::GetAtt": ["WordGeneratorFunction", "Arn"]
                                     },
                                     "invocations"
                                 ]]
@@ -669,15 +671,15 @@
                 ]
             }
         },
-        "NameGeneratorApiGenerateNameResourceOptions": {
+        "WordGeneratorApiGenerateNameResourceOptions": {
             "Type": "AWS::ApiGateway::Method",
             "Properties": {
                 "AuthorizationType": "NONE",
                 "ResourceId": {
-                    "Ref": "NameGeneratorApiGenerateNameResource"
+                    "Ref": "WordGeneratorApiGenerateNameResource"
                 },
                 "RestApiId": {
-                    "Ref": "NameGeneratorApi"
+                    "Ref": "WordGeneratorApi"
                 },
                 "HttpMethod": "OPTIONS",
                 "Integration": {
@@ -689,7 +691,7 @@
                                     "Fn::Join": ["", [
                                         "'",
                                         {
-                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateNameHttpMethod"]
+                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
                                         },
                                         ",",
                                         "OPTIONS",
@@ -719,27 +721,27 @@
                 ]
             }
         },
-        "NameGeneratorApiDeployment": {
+        "WordGeneratorApiDeployment": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
                 "RestApiId": {
-                    "Ref": "NameGeneratorApi"
+                    "Ref": "WordGeneratorApi"
                 },
                 "StageName": "DummyStage"
             },
             "DependsOn": [
-                "NameGeneratorApiGenerateNameResourceMainMethod",
-                "NameGeneratorApiGenerateNameResourceOptions"
+                "WordGeneratorApiGenerateNameResourceMainMethod",
+                "WordGeneratorApiGenerateNameResourceOptions"
             ]
         },
-        "NameGeneratorApiStage": {
+        "WordGeneratorApiStage": {
             "Type": "AWS::ApiGateway::Stage",
             "Properties": {
                 "DeploymentId": {
-                    "Ref": "NameGeneratorApiDeployment"
+                    "Ref": "WordGeneratorApiDeployment"
                 },
                 "RestApiId": {
-                    "Ref": "NameGeneratorApi"
+                    "Ref": "WordGeneratorApi"
                 },
                 "StageName": {
                     "Fn::FindInMap": ["StaticVariables", "Main", "StageName"]
@@ -748,13 +750,13 @@
         }
 	},
     "Outputs": {
-        "NameGeneratorApiEndPoint": {
+        "WordGeneratorApiEndPoint": {
             "Value": {
                 "Fn::Join": [
                     "", [
                         "https://",
                         {
-                            "Ref": "NameGeneratorApi"
+                            "Ref": "WordGeneratorApi"
                         },
                         ".execute-api.",
                         {
@@ -766,7 +768,7 @@
                         },
                         "/",
                         {
-                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateNameMethodPathPart"]
+                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordMethodPathPart"]
                         }
                     ]
                 ]

@@ -1,10 +1,10 @@
-# Unique Name Generator API
+# Unique Word Generator API
 
 A serverless API for generating a guaranteed unique word from a preset word list.
 
 ## Why?
 
-It's useful for easily getting a unique name for something where the name itself isn't really important--only that it's unique. The default word list consists of animal names.
+It's useful for easily getting a unique word for something where the word itself isn't really important--only that it's unique. The default word list consists of animal names.
 
 A common use case would be for disposable servers or deployments. **Without** an API like this, you might use:
 
@@ -28,7 +28,7 @@ Now your cluster of webservers has names that are unique, easy to remember, and 
 ## Demo
 
 There's no graphical user interface implemented, but I've deployed an API here:
-* https://animals.bennlinger.com/v1/generate-name
+* https://animals.bennlinger.com/v1/generate-word
 
 Open it in your browser (or curl it from bash) for a unique animal. Try again. Another animal! You'll always get a unique animal (or an animal with a unique counter after it runs out of animals--e.g. kangaroo5).
 
@@ -36,7 +36,7 @@ Open it in your browser (or curl it from bash) for a unique animal. Try again. A
 
 Click this button and follow the prompts to launch the stack.
 
-[![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=unique-name-generator1&templateURL=https://s3.amazonaws.com/bennlinger-public-site/unique-name-generator-api/unique-name-api.json)
+[![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=unique-word-generator1&templateURL=https://s3.amazonaws.com/bennlinger-public-site/unique-word-generator-api/unique-word-api.json)
 
 After the stack's status changes to CREATE_COMPLETE, select it and then click the Outputs tab. There's just one, and its value is the URL for your API. You can open this in a web browser or curl the result directly into your bash script like this:
 
@@ -60,10 +60,10 @@ I partially decided to do this as an exercise with AWS services, but also had th
 * Design should follow AWS best practices when possible
 * Per-usage costs minimized
 * Deployable entirely from a **single CloudFormation template**
-* Absolutely no possibility of duplicate names despite concurrent requests
+* Absolutely no possibility of duplicate words despite concurrent requests
 * API should return appropriate status codes
 * API should be reasonably fast (<500 ms on average)
-* API should allow easy curling of resulting name from a shell script
+* API should allow easy curling of resulting word from a shell script
 
 The result is an API that:
 
@@ -130,13 +130,13 @@ Not yet implemented.
 **Can I use my own domain for the API?**  
 Absolutely! See Amazon's documentation [here](http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
 
-**What happens when it runs out of names?**  
+**What happens when it runs out of words?**  
 It starts over and adds a counter after, so instead of "wallaby", you'd receive "wallaby2".
 
 **What happens if I exceed the provisioned max requests per second I choose?**  
 Requests will return more slowly, or return an error if they get too slow. This is based on DynamoDB's throttling behavior and the Python AWS SDK (boto3)'s retry behavior.
 
-**If I choose not to shuffle the list, will I get the names in order?**  
+**If I choose not to shuffle the list, will I get the words in order?**  
 Only approximately. This uses Amazon SQS on the backend so this is explained in the [FAQ](https://aws.amazon.com/sqs/faqs/) regarding first-in first-out (FIFO) of messages.
 
 **Can I launch more than one API in the same AWS account?**  
