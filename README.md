@@ -65,12 +65,12 @@ Note that all prices were last updated at the time of writing: 2016-08-24.
 
 Prices represent the cost of deploying the API via the CloudFormation template.
 
-| Service / Operation      | Cost          | Free Tier Eligible            |
-|--------------------------|---------------|-------------------------------|
-| AWS Simple Queue Service | $0.0000875    | Yes - No expiration           |
-| AWS Lambda               | $0.0001667    | Yes - No expiration           |
-| AWS API Gateway          | $0.000175     | Yes - Expires after 12 months |
-| **TOTAL**                | **$0.0004292**|                               |
+| Service / Operation                                  | Cost          | Free Tier Eligible            |
+|------------------------------------------------------|---------------|-------------------------------|
+| AWS Simple Queue Service                             | $0.0000875    | Yes - No expiration           |
+| AWS Lambda                                           | $0.0001667    | Yes - No expiration           |
+| AWS API Gateway                                      | $0.000175     | Yes - Expires after 12 months |
+| **Total Per Deployment** (if free tier already used) | **$0.0004292**|                               |
 
 Yes, it will cost less than a penny to deploy if your free tier allowance is already consumed. Otherwise, there are no costs.
 
@@ -78,13 +78,13 @@ Yes, it will cost less than a penny to deploy if your free tier allowance is alr
 
 Now let's break down the per-request costs.
 
-| Service / Operation        | Cost             | Free Tier Eligible            |
-|----------------------------|------------------|-------------------------------|
-| AWS Simple Queue Service   | $0.0000015       | Yes - No expiration           |
-| AWS Lambda                 | $0.000002084     | Yes - No expiration           |
-| AWS API Gateway - Requests | $0.0000035       | Yes - Expires after 12 months |
-| AWS API Gateway - Data Out | $0.0000000495    | No                            |
-| **TOTAL**                  | **$0.0000071335**|                               |
+| Service / Operation                               | Cost             | Free Tier Eligible            |
+|---------------------------------------------------|------------------|-------------------------------|
+| AWS Simple Queue Service                          | $0.0000015       | Yes - No expiration           |
+| AWS Lambda                                        | $0.000002084     | Yes - No expiration           |
+| AWS API Gateway - Requests                        | $0.0000035       | Yes - Expires after 12 months |
+| AWS API Gateway - Data Out                        | $0.0000000495    | No                            |
+| **Total Per Request** (if free tier already used) | **$0.0000071335**|                               |
 
 That comes out to a little over 140,000 API requests before you owe your first dollar, assuming your free tier allowance was already used up.
 
@@ -92,11 +92,11 @@ That comes out to a little over 140,000 API requests before you owe your first d
 
 Note that your first 25 read and write capacity units are free each month.
 
-| Service / Operation                         | Cost             | Free Tier Eligible            |
-|---------------------------------------------|------------------|-------------------------------|
-| Amazon DynamoDB - Write Capacity Month (1)  | $0.468           | Yes - No expiration           |
-| Amazon DynamoDB - Read Capacity Month (1)   | $0.0936          | Yes - No expiration           |
-| **TOTAL**                                   | **$0.5616**      |                               |
+| Service / Operation                                                | Cost             | Free Tier Eligible            |
+|--------------------------------------------------------------------|------------------|-------------------------------|
+| Amazon DynamoDB - Write Capacity Month (1)                         | $0.468           | Yes - No expiration           |
+| Amazon DynamoDB - Read Capacity Month (1)                          | $0.0936          | Yes - No expiration           |
+| **Total Per Request/Second Per Month** (if free tier already used) | **$0.5616**      |                               |
 
 This represents the minimum / default throughput setting - 1 read/write per second. Each API request requires one of each and DynamoDB's perpetual free tier allows 25 of each. For every request per second you want the API to support beyond the free tier, the cost is $0.5616 per request per second if provisioned for the entire month.
 
