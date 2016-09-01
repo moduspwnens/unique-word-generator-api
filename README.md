@@ -155,6 +155,7 @@ The only hurdle in your way is DynamoDB, which requires you to set provisioned c
 
 * Fix known issues
 * Support multiple "unique namespaces" from a single API
+* Support for automatic pre-warming to avoid delay on cold requests
 
 ## Contact
 
