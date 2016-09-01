@@ -2,6 +2,13 @@
 
 A serverless API for generating a guaranteed unique word from a preset word list.
 
+## Demo
+
+View a live demo here:
+* https://animals.bennlinger.com/
+
+Hit the button as many times as you'd like. You'll always get a different animal! If all the animals have been used, you may get one with a number (e.g. kangaroo5). 
+
 ## Why?
 
 It's useful for easily getting a unique word for something where the word itself isn't really important--only that it's unique. The default word list consists of animal names.
@@ -25,26 +32,13 @@ Using this API, you can now have:
 
 Now your cluster of webservers has names that are unique, easy to remember, and easy to spell.
 
-## Demo
-
-There's no graphical user interface implemented, but I've deployed an API here:
-* https://animals.bennlinger.com/v1/generate-word
-
-Open it in your browser (or curl it from bash) for a unique animal. Try again. Another animal! You'll always get a unique animal (or an animal with a unique counter after it runs out of animals--e.g. kangaroo5).
-
 ## How to use
 
 Click this button and follow the prompts to launch the stack.
 
 [![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=unique-word-generator1&templateURL=https://s3.amazonaws.com/bennlinger-public-site/unique-word-generator-api/unique-word-api.json)
 
-After the stack's status changes to CREATE_COMPLETE, select it and then click the Outputs tab. There's just one, and its value is the URL for your API. You can open this in a web browser or curl the result directly into your bash script like this:
-
-```
-#!/bin/bash
-$ export NEW_ANIMAL=$(curl -s https://your-api-url-here)
-$ echo "$NEW_ANIMAL"
-```
+After the stack's status changes to CREATE_COMPLETE, select it and then click the Outputs tab. There's just one, and its value is the URL for your API's web interface. Click the link to give it a spin and see some code examples for utilizing it.
 
 ## Design goals
 
@@ -122,7 +116,7 @@ This represents the minimum / default throughput setting - 1 read/write per seco
 **API doesn't return appropriate error codes / messages.**  
 Not yet implemented.
 
-**Used word list table increases in size indefinitely.**  
+**No pruning process implemented for "used words" table.**  
 The cost is minimal, as each word reservation's size will be 12 bytes plus the length of the word in UTF-8 encoded bytes. DynamoDB's perpetual free tier covers the first 25GB. Still, it's not good design for it to increase forever as it is utilized.
 
 ## FAQ
@@ -160,7 +154,6 @@ The only hurdle in your way is DynamoDB, which requires you to set provisioned c
 ## Roadmap
 
 * Fix known issues
-* Add basic web-based front end that shows usage examples
 * Support multiple "unique namespaces" from a single API
 
 ## Contact

@@ -6,7 +6,6 @@ import os, sys, json
 
 # These limits are set by CloudFormation.
 function_max_characters = 4096
-cloudformation_template_max_size = 51200 # Max for template included in request
 cloudformation_template_max_size = 460800 # Max for template loaded from S3
 
 input_word_list_separator = "\n"
@@ -17,8 +16,13 @@ function_name_source_map = {
     "WordGeneratorFunction": "generate_word.py"
 }
 
+web_resource_name_source_map = {
+    "WordGeneratorApiRootGet": "index.html"
+}
+
 word_lists_directory_name = "word-lists"
 function_source_directory_name = "functions"
+web_source_directory_name = "web"
 cloudformation_source_template_file_name = "unique-word-api-source.json"
 
 repository_directory_path = os.path.dirname(os.path.realpath(__file__))
@@ -46,6 +50,34 @@ try:
 except:
     raise Exception("Error decoding JSON from CloudFormation source template at {}.".format(cloudformation_source_template_file_path))
 
+
+
+'''
+    LOAD WEB SOURCE CODE
+'''
+web_resource_names = web_resource_name_source_map.keys()
+
+for each_web_resource_name in web_resource_names:
+    each_web_resource_file_name = web_resource_name_source_map[each_web_resource_name]
+    
+    web_resource_file_path = os.path.join(
+        repository_directory_path,
+        web_source_directory_name,
+        each_web_resource_file_name
+    )
+    
+    web_resource_source_string = None
+    try:
+        web_resource_source_string = open(web_resource_file_path).read()
+    except:
+        raise Exception("Unable to read web content source for {} at {}.".format(each_web_resource_name, web_resource_file_path))
+    
+    try:
+        cloudformation_template_object["Resources"][each_web_resource_name]["Properties"]["Integration"]["IntegrationResponses"][0]["ResponseTemplates"]["text/html"] = web_resource_source_string
+    except:
+        raise Exception("Unable to add web content for {} to CloudFormation template.".format(each_web_resource_name))
+    
+    print("Web content for {} loaded into CloudFormation template.".format(each_web_resource_name), file=sys.stderr)
 
 
 
