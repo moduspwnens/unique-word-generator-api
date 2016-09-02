@@ -2,7 +2,7 @@
     This function is called by API Gateway to generate a new unique word.
 """
 from __future__ import print_function
-import json
+import json, time, urllib2
 import boto3, botocore
 
 max_tries = 5
@@ -10,11 +10,19 @@ max_tries = 5
 def lambda_handler(event, context):
     print("Event: {}".format(json.dumps(event)))
     
-    # Get reference to our SQS queue.
-    queue = boto3.resource("sqs").Queue(event["wordlist-queue-url"])
+    if "x-amz-sns-message-type" in event and event["x-amz-sns-message-type"] == "SubscriptionConfirmation":
+        subscription_confirmation_event_received(event)
+        return
     
     # Get reference to our used words table.
     used_words_table = boto3.resource("dynamodb").Table(event["used-words-table"])
+    
+    if "warming" in event:
+        prewarm_event_received(used_words_table, context.log_stream_name)
+        return
+    
+    # Get reference to our SQS queue.
+    queue = boto3.resource("sqs").Queue(event["wordlist-queue-url"])
     
     try_count = 0
     while try_count < max_tries:
@@ -83,3 +91,27 @@ def reserve_next_word(queue, used_words_table):
     print("Returning word: \"{}\"".format(final_word))
     
     return final_word
+
+def prewarm_event_received(used_words_table, unique_context_id):
+    
+    # Send a DeleteItem request for an item we know isn't an actual used word.
+    used_words_table.delete_item(
+        Key = {
+            "PartitionKey": unique_context_id
+        }
+    )
+    
+    # Delay a second to avoid consuming multiple write capacity units.
+    time.sleep(1)
+    
+    # Send a PutItem request for an item unique to this Lambda deployment.
+    used_words_table.put_item(
+        Item = {
+            "PartitionKey": unique_context_id
+        }
+    )
+    
+    print("Lambda function and DynamoDB table have been warmed.")
+
+def subscription_confirmation_event_received(event):
+    print(urllib2.urlopen(event["request-body"]["SubscribeURL"]).read())

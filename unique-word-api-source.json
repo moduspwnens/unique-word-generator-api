@@ -14,12 +14,15 @@
                     "Label": {
                         "default": "Configuration"
                     },
-                    "Parameters": ["MaxRequestsPerSecond"]
+                    "Parameters": ["MaxRequestsPerSecond", "PreWarmingEnabled"]
                 }
             ],
             "ParameterLabels": {
                 "MaxRequestsPerSecond": {
                     "default": "Max Requests Per Second"
+                },
+                "PreWarmingEnabled": {
+                    "default": "Pre-Warming Enabled"
                 },
                 "ShuffleWordList": {
                     "default": "Shuffle Word List"
@@ -33,6 +36,12 @@
             "Description": "Sets provisioned DynamoDB throughput.",
             "Default": 1,
             "MinValue": 1
+        },
+        "PreWarmingEnabled": {
+            "Type": "String",
+            "Description": "Ping resources each minute to keep initial response times fast.",
+			"Default": "Yes",
+			"AllowedValues": ["Yes", "No"]
         },
         "ShuffleWordList": {
             "Type": "String",
@@ -50,6 +59,13 @@
 			}
 		}
 	},
+	"Conditions": {
+		"PreWarmingEnabledCondition": {
+			"Fn::Equals": [{
+				"Ref": "PreWarmingEnabled"
+			}, "Yes"]
+		}
+    },
 	"Resources": {
 		"WordListQueue": {
 			"Type": "AWS::SQS::Queue",
@@ -259,6 +275,7 @@
                     {
                         "Effect": "Allow",
                         "Action": [
+                            "dynamodb:DeleteItem",
                             "dynamodb:PutItem"
                         ],
                         "Resource": {
@@ -350,7 +367,7 @@
                 }
             }
         },
-        "WordGeneratorApiLambdaPermission": {
+        "WordGeneratorGenerateWordApiGatewayLambdaPermission": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "Action": "lambda:InvokeFunction",
@@ -378,6 +395,44 @@
                                 {
                                     "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
                                 },
+                                {
+                                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordMethodPathPart"]
+                                }
+                            ]]
+                        }
+                    ]]
+                }
+            },
+            "DependsOn": [
+                "WordGeneratorRoleActions"
+            ]
+        },
+        "WordGeneratorPreWarmApiGatewayLambdaPermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:InvokeFunction",
+                "FunctionName": {
+                    "Ref": "WordGeneratorFunction"
+                },
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                    "Fn::Join": [":", [
+                        "arn",
+                        "aws",
+                        "execute-api",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        {
+                            "Ref": "AWS::AccountId"
+                        },
+                        {
+                            "Fn::Join": ["/", [
+                                {
+                                    "Ref": "WordGeneratorApi"
+                                },
+                                "*",
+                                "POST",
                                 {
                                     "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordMethodPathPart"]
                                 }
@@ -490,6 +545,84 @@
                 ]
             }
         },
+        "WordGeneratorApiGenerateNameResourcePreWarmMethod": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+                "AuthorizationType": "NONE",
+                "HttpMethod": "POST",
+                "RequestParameters": {
+                    "method.request.header.x-amz-sns-message-type": false,
+                    "method.request.header.x-amz-sns-message-id": false,
+                    "method.request.header.x-amz-sns-topic-arn": false
+                },
+                "ResourceId": {
+                    "Ref": "WordGeneratorApiGenerateNameResource"
+                },
+                "RestApiId": {
+                    "Ref": "WordGeneratorApi"
+                },
+                "Integration": {
+                    "IntegrationHttpMethod": "POST",
+                    "IntegrationResponses": [
+                        {
+                            "ResponseTemplates": {
+                                "application/json": "$input.path('$')"
+                            },
+                            "StatusCode": "200"
+                        }
+                    ],
+                    "PassthroughBehavior": "NEVER",
+                    "RequestTemplates": {
+                        "text/plain": {
+                            "Fn::Join": ["", [
+                                "{\n",
+                                "\t",
+                                "\"used-words-table\": \"",
+                                {
+                                    "Ref": "UsedWordsTable"
+                                },
+                                "\",\n",
+                                "\t\"warming\": true,\n",
+                                "\t\"request-body\": $input.json('$'),\n",
+                                "\t\"x-amz-sns-message-type\": \"$input.params('x-amz-sns-message-type')\",\n",
+                                "\t\"x-amz-sns-message-id\": \"$input.params('x-amz-sns-message-id')\",\n",
+                                "\t\"x-amz-sns-topic-arn\": \"$input.params('x-amz-sns-topic-arn')\"",
+                                "\n",
+                                "}"
+                            ]]
+                        }
+                    },
+                    "Type": "AWS",
+                    "Uri": {
+                        "Fn::Join": [":", [
+                            "arn",
+                            "aws",
+                            "apigateway",
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            "lambda",
+                            {
+                                "Fn::Join": ["/", [
+                                    "path",
+                                    "2015-03-31",
+                                    "functions",
+                                    {
+                                        "Fn::GetAtt": ["WordGeneratorFunction", "Arn"]
+                                    },
+                                    "invocations"
+                                ]]
+                            }
+                        ]]
+                    }
+                },
+                "MethodResponses": [
+                    {
+                        "StatusCode": "200"
+                    }
+                ]
+            }
+        },
         "WordGeneratorApiGenerateNameResourceOptions": {
             "Type": "AWS::ApiGateway::Method",
             "Properties": {
@@ -564,6 +697,91 @@
                 },
                 "StageName": {
                     "Fn::FindInMap": ["StaticVariables", "Main", "StageName"]
+                }
+            }
+        },
+        "WordGeneratorPreWarmingEventRule": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Description": "Keeps unique word generator API initial response times fast.",
+                "ScheduleExpression": "rate(1 minute)",
+                "State": {
+                    "Fn::If": [
+                        "PreWarmingEnabledCondition",
+                        "ENABLED",
+                        "DISABLED"
+                    ]
+                },
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Ref": "WordGeneratorPreWarmingTopic"
+                        },
+                        "Id": "WordGeneratorPreWarmingTopic"
+                    }
+                ]
+            }
+        },
+        "WordGeneratorPreWarmingTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "Subscription": [
+                    {
+                        "Endpoint": {
+                            "Fn::Join": [
+                                "", [
+                                    "https://",
+                                    {
+                                        "Ref": "WordGeneratorApi"
+                                    },
+                                    ".execute-api.",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    ".amazonaws.com/",
+                                    {
+                                        "Fn::FindInMap": ["StaticVariables", "Main", "StageName"]
+                                    },
+                                    "/",
+                                    {
+                                        "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordMethodPathPart"]
+                                    }
+                                ]
+                            ]
+                        },
+                        "Protocol": "https"
+                    }
+                ]
+            },
+            "DependsOn": [
+                "WordGeneratorRoleActions",
+                "WordGeneratorPreWarmApiGatewayLambdaPermission"
+            ]
+        },
+        "WordGeneratorPreWarmingTopicPolicy": {
+            "Type": "AWS::SNS::TopicPolicy",
+            "Properties": {
+                "Topics": [
+                    {
+                        "Ref": "WordGeneratorPreWarmingTopic"
+                    }
+                ],
+                "PolicyDocument": {
+                    "Id": "AllowCloudWatchEvents",
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "Statement1",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "events.amazonaws.com"
+                            },
+                            "Action": "sns:Publish",
+                            "Resource": {
+                                "Ref": "WordGeneratorPreWarmingTopic"
+                            }
+                        }
+                    ]
                 }
             }
         }
