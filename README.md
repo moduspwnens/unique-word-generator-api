@@ -7,7 +7,7 @@ A serverless API for generating a guaranteed unique word from a preset word list
 View a live demo here:
 * https://animals.bennlinger.com/
 
-Hit the button as many times as you'd like. You'll always get a different animal! If all the animals have been used, you may get one with a number (e.g. kangaroo5). 
+Hit the button as many times as you'd like. You'll always get a different animal! If all of the animals have been used, you may get one with a number (e.g. kangaroo5). 
 
 ## Why?
 
@@ -101,12 +101,13 @@ That comes out to a little over 140,000 API requests before you owe your first d
 
 ### Monthly Static Costs
 
-Note that your first 25 read and write capacity units are free each month.
+Note that your first 25 DynamoDB read and write capacity units are free each month.
 
 | Service / Operation                                                | Cost             | Free Tier Eligible            |
 |--------------------------------------------------------------------|------------------|-------------------------------|
 | Amazon DynamoDB - Write Capacity Month (1)                         | $0.468           | Yes - No expiration           |
 | Amazon DynamoDB - Read Capacity Month (1)                          | $0.0936          | Yes - No expiration           |
+| AWS Simple Queue Service (~17,500 requests)                        | $0.00875         | Yes - No expiration           |
 | **Total Per Request/Second Per Month** (if free tier already used) | **$0.5616**      |                               |
 
 This represents the minimum / default throughput setting - 1 read/write per second. Each API request requires one of each and DynamoDB's perpetual free tier allows 25 of each. For every request per second you want the API to support beyond the free tier, the cost is $0.5616 per request per second if provisioned for the entire month.
