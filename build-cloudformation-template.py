@@ -103,6 +103,9 @@ for each_function_name in function_names:
     except:
         raise Exception("Unable to read source code for {} function at {}.".format(each_function_name, function_source_file_path))
     
+    # Reduce character count by converting four space indents to tabs.
+    function_source_string = function_source_string.replace("    ", "\t")
+    
     if len(function_source_string) > function_max_characters:
         raise Exception("Source code for function {} is too long. It is {} characters long ({} max).".format(
             each_function_name,

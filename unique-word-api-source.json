@@ -52,6 +52,7 @@
 	"Mappings": {
 		"StaticVariables": {
 			"Main": {
+                "ApiGatewayErrorMappingTemplate": "#set ($errorMessageObj = $util.parseJson($input.path('$.errorMessage')))\n#set ($bodyObj = $util.parseJson($input.body))\n{\n    \"type\": \"$errorMessageObj.errorType\",\n    \"message\": \"$errorMessageObj.message\"\n}",
                 "GenerateWordHttpMethod": "GET",
                 "GenerateWordMethodPathPart": "generate-word",
                 "PreWarmScheduleExpression": "rate(1 minute)",
@@ -339,7 +340,7 @@
 					"ZipFile": "__ADDED_BY_CLOUDFORMATION_TEMPLATE_BUILDER__"
 				},
 				"Runtime": "python2.7",
-				"Timeout": "60"
+				"Timeout": "55"
 			}
 		},
 		"WordGeneratorRole": {
@@ -405,7 +406,6 @@
                     {
                         "Effect": "Allow",
                         "Action": [
-                            "dynamodb:DeleteItem",
                             "dynamodb:PutItem"
                         ],
                         "Resource": {
@@ -574,7 +574,56 @@
                             "ResponseTemplates": {
                                 "text/plain": "$input.path('$')"
                             },
+                            "SelectionPattern": "",
                             "StatusCode": "200"
+                        },
+                        {
+                            "ResponseParameters": {
+                                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                "method.response.header.Access-Control-Allow-Methods": {
+                                    "Fn::Join": ["", [
+                                        "'",
+                                        {
+                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
+                                        },
+                                        ",",
+                                        "OPTIONS",
+                                        "'"
+                                    ]]
+                                },
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,Pragma,Cache-Control,If-Modified-Since'",
+                                "method.response.header.Content-Type": "'application/json'"
+                            },
+                            "ResponseTemplates": {
+                                "application/json": "{\n    \"type\": \"InternalServerTimeout\",\n    \"message\": \"The word generator function did not respond quickly enough.\"\n}"
+                            },
+                            "SelectionPattern": ".*Task timed out after .*",
+                            "StatusCode": "504"
+                        },
+                        {
+                            "ResponseParameters": {
+                                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                "method.response.header.Access-Control-Allow-Methods": {
+                                    "Fn::Join": ["", [
+                                        "'",
+                                        {
+                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
+                                        },
+                                        ",",
+                                        "OPTIONS",
+                                        "'"
+                                    ]]
+                                },
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,Pragma,Cache-Control,If-Modified-Since'",
+                                "method.response.header.Content-Type": "'application/json'"
+                            },
+                            "ResponseTemplates": {
+                                "application/json": {
+                                    "Fn::FindInMap": ["StaticVariables", "Main", "ApiGatewayErrorMappingTemplate"]
+                                }
+                            },
+                            "SelectionPattern": ".*httpStatus\\\":500.*",
+                            "StatusCode": "500"
                         }
                     ],
                     "PassthroughBehavior": "NEVER",
@@ -635,6 +684,24 @@
                             "method.response.header.Content-Type": false
                         },
                         "StatusCode": "200"
+                    },
+                    {
+                        "ResponseParameters": {
+                            "method.response.header.Access-Control-Allow-Origin": false,
+                            "method.response.header.Access-Control-Allow-Methods": false,
+                            "method.response.header.Access-Control-Allow-Headers": false,
+                            "method.response.header.Content-Type": false
+                        },
+                        "StatusCode": "500"
+                    },
+                    {
+                        "ResponseParameters": {
+                            "method.response.header.Access-Control-Allow-Origin": false,
+                            "method.response.header.Access-Control-Allow-Methods": false,
+                            "method.response.header.Access-Control-Allow-Headers": false,
+                            "method.response.header.Content-Type": false
+                        },
+                        "StatusCode": "504"
                     }
                 ],
                 "RequestParameters": {

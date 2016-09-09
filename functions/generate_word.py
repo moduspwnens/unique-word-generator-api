@@ -2,17 +2,17 @@
     This function is called by API Gateway to generate a new unique word.
 """
 from __future__ import print_function
-import json, time, urllib2
+import json
 import boto3, botocore
 
 max_tries = 5
 
+class CriticalLocalException(Exception):
+    def __init__(self,*args,**kwargs):
+        Exception.__init__(self,*args,**kwargs)
+
 def lambda_handler(event, context):
     print("Event: {}".format(json.dumps(event)))
-    
-    if "x-amz-sns-message-type" in event and event["x-amz-sns-message-type"] == "SubscriptionConfirmation":
-        subscription_confirmation_event_received(event)
-        return
     
     # Get reference to our used words table.
     used_words_table = boto3.resource("dynamodb").Table(event["used-words-table"])
@@ -30,10 +30,16 @@ def lambda_handler(event, context):
         
         try:
             return reserve_next_word(queue, used_words_table)
+        except CriticalLocalException:
+            raise
         except Exception as e:
             print("Error: {}".format(e))
     
-    raise Exception("Unable to generate unique word.")
+    raise_error_for_api_gateway(
+        500,
+        "InternalError",
+        "Unable to generate a unique word after {} tries.".format(max_tries)
+    )
 
 def reserve_next_word(queue, used_words_table):
     
@@ -42,7 +48,11 @@ def reserve_next_word(queue, used_words_table):
     sqs_message_list = queue.receive_messages()
     
     if len(sqs_message_list) == 0:
-        raise StopIteration("No words available in queue.")
+        raise_error_for_api_gateway(
+            500,
+            "InternalError",
+            "No words available in queue."
+        )
     
     sqs_message = sqs_message_list[0]
     
@@ -94,16 +104,6 @@ def reserve_next_word(queue, used_words_table):
 
 def prewarm_event_received(used_words_table, unique_context_id):
     
-    # Send a DeleteItem request for an item we know isn't an actual used word.
-    used_words_table.delete_item(
-        Key = {
-            "PartitionKey": unique_context_id
-        }
-    )
-    
-    # Delay a second to avoid consuming multiple write capacity units.
-    time.sleep(1)
-    
     # Send a PutItem request for an item unique to this Lambda deployment.
     used_words_table.put_item(
         Item = {
@@ -113,5 +113,13 @@ def prewarm_event_received(used_words_table, unique_context_id):
     
     print("Lambda function and DynamoDB table have been warmed.")
 
-def subscription_confirmation_event_received(event):
-    print(urllib2.urlopen(event["request-body"]["SubscribeURL"]).read())
+def raise_error_for_api_gateway(status_code, error_type, error_message):
+    # Raising the error this way allows for it to be recognized and formatted 
+    # by API Gateway to return the correct status code and message.
+    
+    raise CriticalLocalException(json.dumps({
+        "errorType": error_type,
+        "httpStatus": status_code,
+        "message": error_message
+    }, separators=(',', ':')))
+

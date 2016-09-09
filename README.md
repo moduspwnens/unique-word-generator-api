@@ -114,9 +114,6 @@ This represents the minimum / default throughput setting - 1 read/write per seco
 
 ## Known Issues
 
-**API doesn't return appropriate error codes / messages.**  
-Not yet implemented.
-
 **No pruning process implemented for "used words" table.**  
 The cost is minimal, as each word reservation's size will be 12 bytes plus the length of the word in UTF-8 encoded bytes. DynamoDB's perpetual free tier covers the first 25GB. Still, it's not good design for it to increase forever as it is utilized.
 
