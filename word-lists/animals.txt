@@ -30,7 +30,6 @@ africanharrierhawk
 africanhornbill
 africanjacana
 africanmolesnake
-africanparadiseflycatcher
 africanpiedkingfisher
 africanporcupine
 africanrockpython
@@ -60,7 +59,6 @@ alligatorsnappingturtle
 allosaurus
 alpaca
 alpinegoat
-alpineroadguidetigerbeetle
 altiplanochinchillamouse
 amazondolphin
 amazonparrot
@@ -187,8 +185,6 @@ asianporcupine
 asiansmallclawedotter
 asiantrumpetfish
 asianwaterbuffalo
-asiaticgreaterfreshwaterclam
-asiaticlesserfreshwaterclam
 asiaticmouflon
 asiaticwildass
 asp
@@ -208,7 +204,6 @@ auklet
 aurochs
 australiancattledog
 australiancurlew
-australianfreshwatercrocodile
 australianfurseal
 australiankelpie
 australiankestrel
@@ -557,7 +552,6 @@ earwig
 easternglasslizard
 easternnewt
 easteuropeanshepherd
-eastrussiancoursinghounds
 eastsiberianlaika
 echidna
 eel
@@ -712,7 +706,6 @@ goat
 godwit
 goitered
 goldeneye
-goldenmantledgroundsquirrel
 goldenretriever
 goldfinch
 goldfish
@@ -1081,7 +1074,6 @@ meadowlark
 mealworm
 meerkat
 megalosaurus
-megalotomusquinquespinosus
 megaraptor
 merganser
 merlin
@@ -1206,7 +1198,6 @@ olm
 opossum
 orangutan
 orca
-oregonsilverspotbutterfly
 oriole
 oropendola
 oropendula
@@ -1292,7 +1283,6 @@ prayingmantid
 prayingmantis
 primate
 pronghorn
-pseudodynerusquadrisectus
 ptarmigan
 pterodactyls
 pterosaurs
@@ -1314,7 +1304,6 @@ quagga
 quahog
 quail
 queenalexandrasbirdwing
-queenalexandrasbirdwingbutterfly
 queenant
 queenbee
 queenconch
@@ -1736,7 +1725,6 @@ zebradove
 zebrafinch
 zebrafish
 zebralongwingbutterfly
-zebraswallowtailbutterfly
 zebratailedlizard
 zebu
 zenaida
