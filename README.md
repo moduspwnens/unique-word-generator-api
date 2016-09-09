@@ -53,7 +53,7 @@ I partially decided to do this as an exercise with AWS services, but also had th
 * IAM permissions should be as restrictive as possible while allowing necessary functionality
 * Design should follow AWS best practices when possible
 * Per-usage costs minimized
-* Deployable entirely from a **single CloudFormation template**
+* Deployable entirely from a **single CloudFormation template** (excluding CDN-hosted CSS / JavaScript)
 * Absolutely no possibility of duplicate words despite concurrent requests
 * API should return appropriate status codes
 * API should be reasonably fast (<500 ms on average)
@@ -156,7 +156,6 @@ The only hurdle in your way is DynamoDB, which requires you to set provisioned c
 
 * Fix known issues
 * Support multiple "unique namespaces" from a single API
-* Support for automatic pre-warming to avoid delay on cold requests
 * Guide for testing / verifying scalability
 
 ## Contact
