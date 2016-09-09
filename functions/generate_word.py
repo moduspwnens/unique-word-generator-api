@@ -17,7 +17,7 @@ def lambda_handler(event, context):
     # Get reference to our used words table.
     used_words_table = boto3.resource("dynamodb").Table(event["used-words-table"])
     
-    if "warming" in event:
+    if "warming" in event and "{}".format(event["warming"]).lower() == "true":
         prewarm_event_received(used_words_table, context.log_stream_name)
         return
     
