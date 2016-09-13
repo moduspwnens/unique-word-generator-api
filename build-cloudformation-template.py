@@ -15,7 +15,8 @@ function_name_source_map = {
     "ConfigurationSetupFunction": "initial_configuration.py",
     "QueueRefreshFunction": "refresh_queue_messages.py",
     "WordGeneratorFunction": "generate_word.py",
-    "PreWarmApiFunction": "prewarm_api.py"
+    "PreWarmApiFunction": "prewarm_api.py",
+    "WordListTableTriggerFunction": "word_list_table_trigger.py"
 }
 
 web_resource_name_source_map = {
