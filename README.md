@@ -117,6 +117,9 @@ This represents the minimum / default throughput setting - 1 read/write per seco
 **No pruning process implemented for "used words" table.**  
 The cost is minimal, as each word reservation's size will be 12 bytes plus the length of the word in UTF-8 encoded bytes. DynamoDB's perpetual free tier covers the first 25GB. Still, it's not good design for it to increase forever as it is utilized.
 
+**CloudWatch log groups are created by Lambda functions and not pruned.**  
+I need to create them in the CloudFormation template instead to ensure they get deleted when the stack is deleted. It's not a huge deal, but there is an account-wide limit on the number of CloudWatch Log Groups.
+
 ## FAQ
 
 **Will I ever get the same word more than once?**  
