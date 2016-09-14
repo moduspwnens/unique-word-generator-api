@@ -1114,7 +1114,6 @@ mouflon
 mountaincat
 mountainlion
 mouse
-mouse/mice
 mousebird
 mudpuppy
 mule
