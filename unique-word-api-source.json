@@ -18,6 +18,9 @@
                 }
             ],
             "ParameterLabels": {
+                "LogRetentionDays": {
+                    "default": "Log Retention (days)"
+                },
                 "MaxRequestsPerSecond": {
                     "default": "Max Requests Per Second"
                 },
@@ -31,6 +34,11 @@
         }
     },
 	"Parameters": {
+        "LogRetentionDays": {
+            "Type": "String",
+            "Default": "14",
+            "AllowedValues": ["1", "3", "5", "7", "14", "30", "60", "90", "120", "150", "180", "365", "400", "545", "731", "1827", "3653"]
+        },
         "MaxRequestsPerSecond": {
             "Type": "Number",
             "Description": "Sets provisioned DynamoDB throughput.",
@@ -53,6 +61,7 @@
 		"StaticVariables": {
 			"Main": {
                 "ApiGatewayErrorMappingTemplate": "#set ($errorMessageObj = $util.parseJson($input.path('$.errorMessage')))\n#set ($bodyObj = $util.parseJson($input.body))\n{\n    \"type\": \"$errorMessageObj.errorType\",\n    \"message\": \"$errorMessageObj.message\"\n}",
+                "DummyStageName": "DummyStage",
                 "GenerateWordHttpMethod": "GET",
                 "GenerateWordMethodPathPart": "generate-word",
                 "PreWarmScheduleExpression": "rate(1 minute)",
@@ -119,7 +128,7 @@
 					"Version": "2012-10-17",
 					"Statement": [{
 						"Effect": "Allow",
-						"Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
     						"Fn::Join": [":", [
                                 "arn",
@@ -156,6 +165,22 @@
                 "Roles": [
                     { "Ref": "QueueRefreshRole" }
                 ]
+            }
+        },
+        "WordListQueueRefreshLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Join": ["", [
+                        "/aws/lambda/",
+                        {
+                            "Ref": "QueueRefreshFunction"
+                        }
+                    ]]
+                },
+                "RetentionInDays": {
+                    "Ref": "LogRetentionDays"
+                }
             }
         },
         "WordListQueueRefreshLambdaPermission": {
@@ -201,7 +226,8 @@
                 ]
             },
             "DependsOn": [
-                "QueueRefreshRoleActions"
+                "QueueRefreshRoleActions",
+                "WordListQueueRefreshLogGroup"
             ]
         },
         "UsedWordsTable": {
@@ -271,7 +297,7 @@
 					"Version": "2012-10-17",
 					"Statement": [{
 						"Effect": "Allow",
-						"Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
     						"Fn::Join": [":", [
                                 "arn",
@@ -310,6 +336,22 @@
                 ]
             }
         },
+        "ConfigurationSetupLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Join": ["", [
+                        "/aws/lambda/",
+                        {
+                            "Ref": "ConfigurationSetupFunction"
+                        }
+                    ]]
+                },
+                "RetentionInDays": {
+                    "Ref": "LogRetentionDays"
+                }
+            }
+        },
 		"ConfigurationSetupInvocation": {
 			"Type": "Custom::ConfigurationSetupInvocation",
 			"Properties": {
@@ -327,7 +369,8 @@
                 }
 			},
             "DependsOn": [
-                "ConfigurationSetupRoleActions"
+                "ConfigurationSetupRoleActions",
+                "ConfigurationSetupLogGroup"
             ]
 		},
 		"WordGeneratorFunction": {
@@ -369,7 +412,7 @@
 					"Version": "2012-10-17",
 					"Statement": [{
 						"Effect": "Allow",
-						"Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
     						"Fn::Join": [":", [
                                 "arn",
@@ -437,6 +480,49 @@
                 "Roles": [
                     { "Ref": "WordGeneratorRole" }
                 ]
+            }
+        },
+        "WordGeneratorFunctionLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Join": ["", [
+                        "/aws/lambda/",
+                        {
+                            "Ref": "WordGeneratorFunction"
+                        }
+                    ]]
+                },
+                "RetentionInDays": {
+                    "Ref": "LogRetentionDays"
+                }
+            }
+        },
+		"ApiGatewayCloudWatchRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Effect": "Allow",
+						"Principal": {
+							"Service": ["apigateway.amazonaws.com"]
+						},
+						"Action": ["sts:AssumeRole"]
+					}]
+				},
+				"Path": "/",
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                ]
+			}
+		},
+        "ApiGatewayAccount": {
+            "Type": "AWS::ApiGateway::Account",
+            "Properties": {
+                "CloudWatchRoleArn": {
+                    "Fn::GetAtt": [ "ApiGatewayCloudWatchRole", "Arn" ]
+                }
             }
         },
         "WordGeneratorApi": {
@@ -537,7 +623,8 @@
                 }
             },
             "DependsOn": [
-                "WordGeneratorRoleActions"
+                "WordGeneratorRoleActions",
+                "WordGeneratorFunctionLogGroup"
             ]
         },
         "WordGeneratorApiGenerateNameResourceMainMethod": {
@@ -768,12 +855,35 @@
                 "RestApiId": {
                     "Ref": "WordGeneratorApi"
                 },
-                "StageName": "DummyStage"
+                "StageName": {
+                    "Fn::FindInMap": ["StaticVariables", "Main", "DummyStageName"]
+                }
             },
             "DependsOn": [
                 "WordGeneratorApiGenerateNameResourceMainMethod",
-                "WordGeneratorApiGenerateNameResourceOptions"
+                "WordGeneratorApiGenerateNameResourceOptions",
+                "WordGeneratorApiDummyStageLogGroup"
             ]
+        },
+        "WordGeneratorApiDummyStageLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Join": ["", [
+                        "API-Gateway-Execution-Logs_",
+                        {
+                            "Ref": "WordGeneratorApi"
+                        },
+                        "/",
+                        {
+                            "Fn::FindInMap": ["StaticVariables", "Main", "DummyStageName"]
+                        }
+                    ]]
+                },
+                "RetentionInDays": {
+                    "Ref": "LogRetentionDays"
+                }
+            }
         },
         "WordGeneratorApiStage": {
             "Type": "AWS::ApiGateway::Stage",
@@ -781,11 +891,43 @@
                 "DeploymentId": {
                     "Ref": "WordGeneratorApiDeployment"
                 },
+                "MethodSettings": [
+                    {
+                        "ResourcePath": "",
+                        "HttpMethod": "*/*",
+                        "DataTraceEnabled": true,
+                        "LoggingLevel": "INFO",
+                        "MetricsEnabled": true
+                    }
+                ],
                 "RestApiId": {
                     "Ref": "WordGeneratorApi"
                 },
                 "StageName": {
                     "Fn::FindInMap": ["StaticVariables", "Main", "StageName"]
+                }
+            },
+            "DependsOn": [
+                "WordGeneratorApiMainStageLogGroup"
+            ]
+        },
+        "WordGeneratorApiMainStageLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Join": ["", [
+                        "API-Gateway-Execution-Logs_",
+                        {
+                            "Ref": "WordGeneratorApi"
+                        },
+                        "/",
+                        {
+                            "Fn::FindInMap": ["StaticVariables", "Main", "StageName"]
+                        }
+                    ]]
+                },
+                "RetentionInDays": {
+                    "Ref": "LogRetentionDays"
                 }
             }
         },
@@ -828,7 +970,7 @@
 					"Version": "2012-10-17",
 					"Statement": [{
 						"Effect": "Allow",
-						"Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
     						"Fn::Join": [":", [
                                 "arn",
@@ -858,6 +1000,22 @@
                 "Roles": [
                     { "Ref": "PreWarmApiFunctionRole" }
                 ]
+            }
+        },
+        "PreWarmApiFunctionLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Join": ["", [
+                        "/aws/lambda/",
+                        {
+                            "Ref": "PreWarmApiFunction"
+                        }
+                    ]]
+                },
+                "RetentionInDays": {
+                    "Ref": "LogRetentionDays"
+                }
             }
         },
         "PreWarmApiEventRule": {
@@ -931,7 +1089,8 @@
                 }
             },
             "DependsOn": [
-                "PreWarmApiFunctionRoleActions"
+                "PreWarmApiFunctionRoleActions",
+                "PreWarmApiFunctionLogGroup"
             ]
         },
 		"WordListTableTriggerFunction": {
@@ -973,7 +1132,7 @@
 					"Version": "2012-10-17",
 					"Statement": [{
 						"Effect": "Allow",
-						"Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
     						"Fn::Join": [":", [
                                 "arn",
@@ -1017,6 +1176,22 @@
                 ]
             }
         },
+        "WordListTableTriggerLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Join": ["", [
+                        "/aws/lambda/",
+                        {
+                            "Ref": "WordListTableTriggerFunction"
+                        }
+                    ]]
+                },
+                "RetentionInDays": {
+                    "Ref": "LogRetentionDays"
+                }
+            }
+        },
         "WordListTableTriggerFunctionEventSourceMapping": {
             "Type": "AWS::Lambda::EventSourceMapping",
             "Properties": {
@@ -1029,7 +1204,8 @@
                 "StartingPosition": "TRIM_HORIZON"
             },
             "DependsOn": [
-                "WordListTableTriggerFunctionRoleActions"
+                "WordListTableTriggerFunctionRoleActions",
+                "WordListTableTriggerLogGroup"
             ]
         }
 	},
