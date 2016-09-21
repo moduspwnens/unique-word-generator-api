@@ -68,6 +68,7 @@
                 "QueueMessageRefreshScheduleExpression": "rate(3 days)",
                 "QueueMessageRetentionPeriod": 1209600,
                 "StageName": "v1",
+                "UsedWordsTriggerBatchSize": 1,
                 "WordList": "__ADDED_BY_CLOUDFORMATION_TEMPLATE_BUILDER__"
 			}
 		}
@@ -130,28 +131,7 @@
 						"Effect": "Allow",
 						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
-    						"Fn::Join": [":", [
-                                "arn",
-                                "aws",
-                                "logs",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                {
-                                    "Ref": "AWS::AccountId"
-                                },
-                                "log-group",
-                                {
-                                    "Fn::Join": ["", [
-                                        "/aws/lambda/",
-                                        {
-                                            "Ref": "QueueRefreshFunction"
-                                        }
-                                    ]]
-                                },
-                                "log-stream",
-                                "*"
-                            ]]
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${QueueRefreshFunction}:log-stream/*"
 						}
 					},
                     {
@@ -171,12 +151,7 @@
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
                 "LogGroupName": {
-                    "Fn::Join": ["", [
-                        "/aws/lambda/",
-                        {
-                            "Ref": "QueueRefreshFunction"
-                        }
-                    ]]
+                    "Fn::Sub": "/aws/lambda/${QueueRefreshFunction}"
                 },
                 "RetentionInDays": {
                     "Ref": "LogRetentionDays"
@@ -210,17 +185,7 @@
                         },
                         "Id": "WordListQueueRefresh",
                         "Input": {
-                            "Fn::Join": ["", [
-                                "{",
-                                " ",
-                                "\"queue-url\": \"",
-                                {
-                                    "Ref": "WordListQueue"
-                                },
-                                "\"",
-                                "\n",
-                                "}"
-                            ]]
+                            "Fn::Sub": "{ \"queue-url\": \"${WordListQueue}\" }"
                         }
                     }
                 ]
@@ -299,28 +264,7 @@
 						"Effect": "Allow",
 						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
-    						"Fn::Join": [":", [
-                                "arn",
-                                "aws",
-                                "logs",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                {
-                                    "Ref": "AWS::AccountId"
-                                },
-                                "log-group",
-                                {
-                                    "Fn::Join": ["", [
-                                        "/aws/lambda/",
-                                        {
-                                            "Ref": "ConfigurationSetupFunction"
-                                        }
-                                    ]]
-                                },
-                                "log-stream",
-                                "*"
-                            ]]
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${ConfigurationSetupFunction}:log-stream/*"
 						}
 					},
                     {
@@ -340,12 +284,7 @@
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
                 "LogGroupName": {
-                    "Fn::Join": ["", [
-                        "/aws/lambda/",
-                        {
-                            "Ref": "ConfigurationSetupFunction"
-                        }
-                    ]]
+                    "Fn::Sub": "/aws/lambda/${ConfigurationSetupFunction}"
                 },
                 "RetentionInDays": {
                     "Ref": "LogRetentionDays"
@@ -414,28 +353,7 @@
 						"Effect": "Allow",
 						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
-    						"Fn::Join": [":", [
-                                "arn",
-                                "aws",
-                                "logs",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                {
-                                    "Ref": "AWS::AccountId"
-                                },
-                                "log-group",
-                                {
-                                    "Fn::Join": ["", [
-                                        "/aws/lambda/",
-                                        {
-                                            "Ref": "WordGeneratorFunction"
-                                        }
-                                    ]]
-                                },
-                                "log-stream",
-                                "*"
-                            ]]
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${WordGeneratorFunction}:log-stream/*"
 						}
 					},
                     {
@@ -455,25 +373,7 @@
                             "dynamodb:PutItem"
                         ],
                         "Resource": {
-    						"Fn::Join": [":", [
-    						    "arn",
-                                "aws",
-                                "dynamodb",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                {
-                                    "Ref": "AWS::AccountId"
-                                },
-                                {
-                                    "Fn::Join": ["/", [
-                                        "table",
-                                        {
-                                            "Ref": "UsedWordsTable"
-                                        }
-                                    ]]
-                                }
-    						]]
+                            "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsedWordsTable}"
                         }
                     }]
 				},
@@ -486,12 +386,7 @@
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
                 "LogGroupName": {
-                    "Fn::Join": ["", [
-                        "/aws/lambda/",
-                        {
-                            "Ref": "WordGeneratorFunction"
-                        }
-                    ]]
+                    "Fn::Sub": "/aws/lambda/${WordGeneratorFunction}"
                 },
                 "RetentionInDays": {
                     "Ref": "LogRetentionDays"
@@ -595,31 +490,17 @@
                 },
                 "Principal": "apigateway.amazonaws.com",
                 "SourceArn": {
-                    "Fn::Join": [":", [
-                        "arn",
-                        "aws",
-                        "execute-api",
+                    "Fn::Sub": [
+                        "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WordGeneratorApi}/*/${GenerateWordHttpMethod}/${GenerateWordHttpMethodPathPart}",
                         {
-                            "Ref": "AWS::Region"
-                        },
-                        {
-                            "Ref": "AWS::AccountId"
-                        },
-                        {
-                            "Fn::Join": ["/", [
-                                {
-                                    "Ref": "WordGeneratorApi"
-                                },
-                                "*",
-                                {
-                                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
-                                },
-                                {
-                                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordMethodPathPart"]
-                                }
-                            ]]
+                            "GenerateWordHttpMethod": {
+                                "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
+                            },
+                            "GenerateWordHttpMethodPathPart": {
+                                "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordMethodPathPart"]
+                            }
                         }
-                    ]]
+                    ]
                 }
             },
             "DependsOn": [
@@ -637,8 +518,7 @@
                 "RestApiId": {
                     "Ref": "WordGeneratorApi"
                 },
-                "HttpMethod": 
-                {
+                "HttpMethod": {
                     "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
                 },
                 "Integration": {
@@ -648,15 +528,14 @@
                             "ResponseParameters": {
                                 "method.response.header.Access-Control-Allow-Origin": "'*'",
                                 "method.response.header.Access-Control-Allow-Methods": {
-                                    "Fn::Join": ["", [
-                                        "'",
+                                    "Fn::Sub": [
+                                        "'${GenerateWordHttpMethod},OPTIONS'",
                                         {
-                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
-                                        },
-                                        ",",
-                                        "OPTIONS",
-                                        "'"
-                                    ]]
+                                            "GenerateWordHttpMethod": {
+                                                "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
+                                            }
+                                        }
+                                    ]
                                 },
                                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,Pragma,Cache-Control,If-Modified-Since'",
                                 "method.response.header.Content-Type": "'text/plain'"
@@ -671,15 +550,14 @@
                             "ResponseParameters": {
                                 "method.response.header.Access-Control-Allow-Origin": "'*'",
                                 "method.response.header.Access-Control-Allow-Methods": {
-                                    "Fn::Join": ["", [
-                                        "'",
+                                    "Fn::Sub": [
+                                        "'${GenerateWordHttpMethod},OPTIONS'",
                                         {
-                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
-                                        },
-                                        ",",
-                                        "OPTIONS",
-                                        "'"
-                                    ]]
+                                            "GenerateWordHttpMethod": {
+                                                "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
+                                            }
+                                        }
+                                    ]
                                 },
                                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,Pragma,Cache-Control,If-Modified-Since'",
                                 "method.response.header.Content-Type": "'application/json'"
@@ -694,15 +572,14 @@
                             "ResponseParameters": {
                                 "method.response.header.Access-Control-Allow-Origin": "'*'",
                                 "method.response.header.Access-Control-Allow-Methods": {
-                                    "Fn::Join": ["", [
-                                        "'",
+                                    "Fn::Sub": [
+                                        "'${GenerateWordHttpMethod},OPTIONS'",
                                         {
-                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
-                                        },
-                                        ",",
-                                        "OPTIONS",
-                                        "'"
-                                    ]]
+                                            "GenerateWordHttpMethod": {
+                                                "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
+                                            }
+                                        }
+                                    ]
                                 },
                                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,Pragma,Cache-Control,If-Modified-Since'",
                                 "method.response.header.Content-Type": "'application/json'"
@@ -720,49 +597,36 @@
                     "RequestTemplates": {
                         "application/json": {
                             "Fn::Join": ["", [
-                                "{\n",
-                                "\t",
-                                "\"request-body\": $input.json(\"$\"),\n",
-                                "\t",
-                                "\"wordlist-queue-url\": \"",
+                                "{",
                                 {
-                                    "Ref": "WordListQueue"
+                                    "Fn::Sub": "\t\"request-body\": $input.json(\"$\")"
                                 },
-                                "\",\n",
-                                "\t",
-                                "\"used-words-table\": \"",
+                                ",",
                                 {
-                                    "Ref": "UsedWordsTable"
+                                    "Fn::Sub": "\t\"wordlist-queue-url\": \"${WordListQueue}\""
                                 },
-                                "\",\n",
-                                "\t",
-                                "\"warming\": \"$input.params('warming')\"\n",
+                                ",",
+                                {
+                                    "Fn::Sub": "\t\"used-words-table\": \"${UsedWordsTable}\""
+                                },
+                                ",",
+                                {
+                                    "Fn::Sub": "\t\"warming\": \"$input.params('warming')\""
+                                },
                                 "}"
                             ]]
                         }
                     },
                     "Type": "AWS",
                     "Uri": {
-                        "Fn::Join": [":", [
-                            "arn",
-                            "aws",
-                            "apigateway",
+                        "Fn::Sub": [
+                            "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WordGeneratorFunctionArn}/invocations",
                             {
-                                "Ref": "AWS::Region"
-                            },
-                            "lambda",
-                            {
-                                "Fn::Join": ["/", [
-                                    "path",
-                                    "2015-03-31",
-                                    "functions",
-                                    {
-                                        "Fn::GetAtt": ["WordGeneratorFunction", "Arn"]
-                                    },
-                                    "invocations"
-                                ]]
+                                "WordGeneratorFunctionArn": {
+                                    "Fn::GetAtt": ["WordGeneratorFunction", "Arn"]
+                                }
                             }
-                        ]]
+                        ]
                     }
                 },
                 "MethodResponses": [
@@ -816,15 +680,14 @@
                             "ResponseParameters": {
                                 "method.response.header.Access-Control-Allow-Origin": "'*'",
                                 "method.response.header.Access-Control-Allow-Methods": {
-                                    "Fn::Join": ["", [
-                                        "'",
+                                    "Fn::Sub": [
+                                        "'${GenerateWordHttpMethod},OPTIONS'",
                                         {
-                                            "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
-                                        },
-                                        ",",
-                                        "OPTIONS",
-                                        "'"
-                                    ]]
+                                            "GenerateWordHttpMethod": {
+                                                "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordHttpMethod"]
+                                            }
+                                        }
+                                    ]
                                 },
                                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,Pragma,Cache-Control,If-Modified-Since'"
                             },
@@ -869,16 +732,14 @@
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
                 "LogGroupName": {
-                    "Fn::Join": ["", [
-                        "API-Gateway-Execution-Logs_",
+                    "Fn::Sub": [
+                        "API-Gateway-Execution-Logs_${WordGeneratorApi}/${DummyStageName}",
                         {
-                            "Ref": "WordGeneratorApi"
-                        },
-                        "/",
-                        {
-                            "Fn::FindInMap": ["StaticVariables", "Main", "DummyStageName"]
+                            "DummyStageName": {
+                                "Fn::FindInMap": ["StaticVariables", "Main", "DummyStageName"]
+                            }
                         }
-                    ]]
+                    ]
                 },
                 "RetentionInDays": {
                     "Ref": "LogRetentionDays"
@@ -915,16 +776,14 @@
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
                 "LogGroupName": {
-                    "Fn::Join": ["", [
-                        "API-Gateway-Execution-Logs_",
+                    "Fn::Sub": [
+                        "API-Gateway-Execution-Logs_${WordGeneratorApi}/${MainStageName}",
                         {
-                            "Ref": "WordGeneratorApi"
-                        },
-                        "/",
-                        {
-                            "Fn::FindInMap": ["StaticVariables", "Main", "StageName"]
+                            "MainStageName": {
+                                "Fn::FindInMap": ["StaticVariables", "Main", "StageName"]
+                            }
                         }
-                    ]]
+                    ]
                 },
                 "RetentionInDays": {
                     "Ref": "LogRetentionDays"
@@ -972,28 +831,7 @@
 						"Effect": "Allow",
 						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
-    						"Fn::Join": [":", [
-                                "arn",
-                                "aws",
-                                "logs",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                {
-                                    "Ref": "AWS::AccountId"
-                                },
-                                "log-group",
-                                {
-                                    "Fn::Join": ["", [
-                                        "/aws/lambda/",
-                                        {
-                                            "Ref": "PreWarmApiFunction"
-                                        }
-                                    ]]
-                                },
-                                "log-stream",
-                                "*"
-                            ]]
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${PreWarmApiFunction}:log-stream/*"
 						}
                     }]
 				},
@@ -1006,12 +844,7 @@
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
                 "LogGroupName": {
-                    "Fn::Join": ["", [
-                        "/aws/lambda/",
-                        {
-                            "Ref": "PreWarmApiFunction"
-                        }
-                    ]]
+                    "Fn::Sub": "/aws/lambda/${PreWarmApiFunction}"
                 },
                 "RetentionInDays": {
                     "Ref": "LogRetentionDays"
@@ -1132,30 +965,12 @@
 					"Version": "2012-10-17",
 					"Statement": [{
 						"Effect": "Allow",
-						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+						"Action": [
+                            "logs:CreateLogStream", 
+                            "logs:PutLogEvents"
+                        ],
 						"Resource": {
-    						"Fn::Join": [":", [
-                                "arn",
-                                "aws",
-                                "logs",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                {
-                                    "Ref": "AWS::AccountId"
-                                },
-                                "log-group",
-                                {
-                                    "Fn::Join": ["", [
-                                        "/aws/lambda/",
-                                        {
-                                            "Ref": "WordListTableTriggerFunction"
-                                        }
-                                    ]]
-                                },
-                                "log-stream",
-                                "*"
-                            ]]
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${WordListTableTriggerFunction}:log-stream/*"
 						}
                     },
                     {
@@ -1180,12 +995,7 @@
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
                 "LogGroupName": {
-                    "Fn::Join": ["", [
-                        "/aws/lambda/",
-                        {
-                            "Ref": "WordListTableTriggerFunction"
-                        }
-                    ]]
+                    "Fn::Sub": "/aws/lambda/${WordListTableTriggerFunction}"
                 },
                 "RetentionInDays": {
                     "Ref": "LogRetentionDays"
@@ -1195,6 +1005,9 @@
         "WordListTableTriggerFunctionEventSourceMapping": {
             "Type": "AWS::Lambda::EventSourceMapping",
             "Properties": {
+                "BatchSize": {
+                    "Fn::FindInMap": ["StaticVariables", "Main", "UsedWordsTriggerBatchSize"]
+                },
                 "EventSourceArn": {
                     "Fn::GetAtt": ["UsedWordsTable", "StreamArn"]
                 },
@@ -1212,22 +1025,13 @@
     "Outputs": {
         "WordGeneratorApiEndPoint": {
             "Value": {
-                "Fn::Join": [
-                    "", [
-                        "https://",
-                        {
-                            "Ref": "WordGeneratorApi"
-                        },
-                        ".execute-api.",
-                        {
-                            "Ref": "AWS::Region"
-                        },
-                        ".amazonaws.com/",
-                        {
+                "Fn::Sub": [
+                    "https://${WordGeneratorApi}.execute-api.${AWS::Region}.amazonaws.com/${MainStageName}/",
+                    {
+                        "MainStageName": {
                             "Fn::FindInMap": ["StaticVariables", "Main", "StageName"]
-                        },
-                        "/"
-                    ]
+                        }
+                    }
                 ]
             }
         }

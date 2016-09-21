@@ -116,7 +116,9 @@ for each_function_name in function_names:
     
     try:
         cloudformation_template_object["Resources"][each_function_name]["Properties"]["Code"] = {
-            "ZipFile": function_source_string
+            "ZipFile": {
+                "Fn::Sub": function_source_string
+            }
         }
     except:
         raise Exception("Unable to add source code for {} to CloudFormation template.".format(each_function_name))
