@@ -131,7 +131,7 @@
 						"Effect": "Allow",
 						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
-                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${QueueRefreshFunction}:log-stream/*"
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${QueueRefreshFunction}:log-stream:*"
 						}
 					},
                     {
@@ -264,7 +264,7 @@
 						"Effect": "Allow",
 						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
-                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${ConfigurationSetupFunction}:log-stream/*"
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${ConfigurationSetupFunction}:log-stream:*"
 						}
 					},
                     {
@@ -353,7 +353,7 @@
 						"Effect": "Allow",
 						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
 						"Resource": {
-                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${WordGeneratorFunction}:log-stream/*"
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${WordGeneratorFunction}:log-stream:*"
 						}
 					},
                     {
@@ -970,7 +970,7 @@
                             "logs:PutLogEvents"
                         ],
 						"Resource": {
-                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${WordListTableTriggerFunction}:log-stream/*"
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${WordListTableTriggerFunction}:log-stream:*"
 						}
                     },
                     {
