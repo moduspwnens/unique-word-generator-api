@@ -14,10 +14,13 @@
                     "Label": {
                         "default": "Configuration"
                     },
-                    "Parameters": ["MaxRequestsPerSecond", "PreWarmingEnabled"]
+                    "Parameters": ["MetricAlarmEmailAddress", "MaxRequestsPerSecond", "PreWarmingEnabled", "LogRetentionDays"]
                 }
             ],
             "ParameterLabels": {
+                "MetricAlarmEmailAddress": {
+                    "default": "Alarm E-mail Address"
+                },
                 "LogRetentionDays": {
                     "default": "Log Retention (days)"
                 },
@@ -44,6 +47,10 @@
             "Description": "Sets provisioned DynamoDB read/write throughput. Note that the AWS free tier includes 25 per account.",
             "Default": 1,
             "MinValue": 1
+        },
+        "MetricAlarmEmailAddress": {
+            "Type": "String",
+            "Description": "In case of errors. Leave blank to disable."
         },
         "PreWarmingEnabled": {
             "Type": "String",
@@ -74,6 +81,13 @@
 		}
 	},
 	"Conditions": {
+        "IncludeMetricAlarmsCondition": {
+			"Fn::Not": [{
+    			"Fn::Equals": [{
+    				"Ref": "MetricAlarmEmailAddress"
+    			}, ""]
+			}]
+        },
 		"PreWarmingEnabledCondition": {
 			"Fn::Equals": [{
 				"Ref": "PreWarmingEnabled"
@@ -423,7 +437,9 @@
         "WordGeneratorApi": {
             "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
-                "Name": "WordGenerator",
+                "Name": {
+                    "Ref": "AWS::StackName"
+                },
                 "Description": "An API for generating unique words."
             }
         },
@@ -938,6 +954,166 @@
                 "WordListTableTriggerFunctionRoleActions",
                 "WordListTableTriggerLogGroup"
             ]
+        },
+        "AdminAlarmTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Condition": "IncludeMetricAlarmsCondition",
+            "Properties": {
+                "Subscription": [
+                    {
+                        "Endpoint": {
+                            "Ref": "MetricAlarmEmailAddress"
+                        },
+                        "Protocol": "email"
+                    }
+                ]
+            }
+        },
+        "WordGeneratorThrottlesAlarm": {
+            "Type": "AWS::CloudWatch::Alarm",
+            "Condition": "IncludeMetricAlarmsCondition",
+            "Properties": {
+                "Namespace": "AWS/Lambda",
+                "Dimensions": [
+                    {
+                        "Name": "FunctionName",
+                        "Value": {
+                            "Ref": "WordGeneratorFunction"
+                        }
+                    }
+                ],
+                "MetricName": "Throttles",
+                "EvaluationPeriods": 1,
+                "Period": 60,
+                "Statistic": "Sum",
+                "Threshold": 0,
+                "ComparisonOperator": "GreaterThanThreshold",
+                "AlarmActions": [
+                    {
+                        "Ref": "AdminAlarmTopic"
+                    }
+                ]
+            }
+        },
+        "WordGeneratorErrorsAlarm": {
+            "Type": "AWS::CloudWatch::Alarm",
+            "Condition": "IncludeMetricAlarmsCondition",
+            "Properties": {
+                "Namespace": "AWS/Lambda",
+                "Dimensions": [
+                    {
+                        "Name": "FunctionName",
+                        "Value": {
+                            "Ref": "WordGeneratorFunction"
+                        }
+                    }
+                ],
+                "MetricName": "Errors",
+                "EvaluationPeriods": 1,
+                "Period": 60,
+                "Statistic": "Sum",
+                "Threshold": 0,
+                "ComparisonOperator": "GreaterThanThreshold",
+                "AlarmActions": [
+                    {
+                        "Ref": "AdminAlarmTopic"
+                    }
+                ]
+            }
+        },
+        "Api5XXErrorsAlarm": {
+            "Type": "AWS::CloudWatch::Alarm",
+            "Condition": "IncludeMetricAlarmsCondition",
+            "Properties": {
+                "Namespace": "AWS/ApiGateway",
+                "Dimensions": [
+                    {
+                        "Name": "ApiName",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        }
+                    },
+                    {
+                        "Name": "Stage",
+                        "Value": {
+                            "Ref": "WordGeneratorApiStage"
+                        }
+                    }
+                ],
+                "MetricName": "5XXError",
+                "EvaluationPeriods": 1,
+                "Period": 60,
+                "Statistic": "Sum",
+                "Threshold": 0,
+                "ComparisonOperator": "GreaterThanThreshold",
+                "AlarmActions": [
+                    {
+                        "Ref": "AdminAlarmTopic"
+                    }
+                ]
+            }
+        },
+        "Api5XXErrorsAlarm": {
+            "Type": "AWS::CloudWatch::Alarm",
+            "Condition": "IncludeMetricAlarmsCondition",
+            "Properties": {
+                "Namespace": "AWS/ApiGateway",
+                "Dimensions": [
+                    {
+                        "Name": "ApiName",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        }
+                    },
+                    {
+                        "Name": "Stage",
+                        "Value": {
+                            "Ref": "WordGeneratorApiStage"
+                        }
+                    }
+                ],
+                "MetricName": "Latency",
+                "EvaluationPeriods": 1,
+                "Period": 60,
+                "Statistic": "Average",
+                "Threshold": 500,
+                "ComparisonOperator": "GreaterThanThreshold",
+                "AlarmActions": [
+                    {
+                        "Ref": "AdminAlarmTopic"
+                    }
+                ]
+            }
+        },
+        "WordReservationDynamoDBRequestThrottledAlarm": {
+            "Type": "AWS::CloudWatch::Alarm",
+            "Condition": "IncludeMetricAlarmsCondition",
+            "Properties": {
+                "Namespace": "AWS/DynamoDB",
+                "Dimensions": [
+                    {
+                        "Name": "Operation",
+                        "Value": "PutItem"
+                    },
+                    {
+                        "Name": "TableName",
+                        "Value": {
+                            "Ref": "UsedWordsTable"
+                        }
+                    }
+                ],
+                "MetricName": "ThrottledRequests",
+                "EvaluationPeriods": 1,
+                "Period": 60,
+                "Statistic": "Sum",
+                "Threshold": 0,
+                "ComparisonOperator": "GreaterThanThreshold",
+                "AlarmActions": [
+                    {
+                        "Ref": "AdminAlarmTopic"
+                    }
+                ]
+            }
         }
 	},
     "Outputs": {
