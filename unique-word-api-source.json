@@ -599,21 +599,21 @@
                             "Fn::Join": ["", [
                                 "{",
                                 {
-                                    "Fn::Sub": "\t\"request-body\": $input.json(\"$\")"
+                                    "Fn::Sub": "\n\t\"request-body\": $input.json(\"$\")"
                                 },
                                 ",",
                                 {
-                                    "Fn::Sub": "\t\"wordlist-queue-url\": \"${WordListQueue}\""
+                                    "Fn::Sub": "\n\t\"wordlist-queue-url\": \"${WordListQueue}\""
                                 },
                                 ",",
                                 {
-                                    "Fn::Sub": "\t\"used-words-table\": \"${UsedWordsTable}\""
+                                    "Fn::Sub": "\n\t\"used-words-table\": \"${UsedWordsTable}\""
                                 },
                                 ",",
                                 {
-                                    "Fn::Sub": "\t\"warming\": \"$input.params('warming')\""
+                                    "Fn::Sub": "\n\t\"warming\": \"$input.params('warming')\""
                                 },
-                                "}"
+                                "\n}"
                             ]]
                         }
                     },
@@ -790,67 +790,6 @@
                 }
             }
         },
-		"PreWarmApiFunction": {
-			"Type": "AWS::Lambda::Function",
-			"Properties": {
-                "Description": "Calls API resources to keep them warm.",
-				"Handler": "index.lambda_handler",
-                "MemorySize": 128,
-				"Role": {
-					"Fn::GetAtt": ["PreWarmApiFunctionRole", "Arn"]
-				},
-				"Code": {
-					"ZipFile": "__ADDED_BY_CLOUDFORMATION_TEMPLATE_BUILDER__"
-				},
-				"Runtime": "python2.7",
-				"Timeout": "300"
-			}
-		},
-		"PreWarmApiFunctionRole": {
-			"Type": "AWS::IAM::Role",
-			"Properties": {
-				"AssumeRolePolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [{
-						"Effect": "Allow",
-						"Principal": {
-							"Service": ["lambda.amazonaws.com"]
-						},
-						"Action": ["sts:AssumeRole"]
-					}]
-				},
-				"Path": "/"
-			}
-		},
-        "PreWarmApiFunctionRoleActions": {
-            "Type": "AWS::IAM::ManagedPolicy",
-            "Properties": {
-                "PolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [{
-						"Effect": "Allow",
-						"Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
-						"Resource": {
-                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${PreWarmApiFunction}:log-stream/*"
-						}
-                    }]
-				},
-                "Roles": [
-                    { "Ref": "PreWarmApiFunctionRole" }
-                ]
-            }
-        },
-        "PreWarmApiFunctionLogGroup": {
-            "Type": "AWS::Logs::LogGroup",
-            "Properties": {
-                "LogGroupName": {
-                    "Fn::Sub": "/aws/lambda/${PreWarmApiFunction}"
-                },
-                "RetentionInDays": {
-                    "Ref": "LogRetentionDays"
-                }
-            }
-        },
         "PreWarmApiEventRule": {
             "Type": "AWS::Events::Rule",
             "Properties": {
@@ -868,41 +807,20 @@
                 "Targets": [
                     {
                         "Arn": {
-                            "Fn::GetAtt": [ "PreWarmApiFunction", "Arn" ]
+                            "Fn::GetAtt": [ "WordGeneratorFunction", "Arn" ]
                         },
-                        "Id": "PreWarmApiFunction",
+                        "Id": "WordGeneratorFunction",
                         "Input": {
                             "Fn::Join": ["", [
                                 "{",
-                                " ",
-                                "\"api-url-base\": \"",
                                 {
-                                    "Fn::Join": [
-                                        "", [
-                                            "https://",
-                                            {
-                                                "Ref": "WordGeneratorApi"
-                                            },
-                                            ".execute-api.",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            ".amazonaws.com/",
-                                            {
-                                                "Fn::FindInMap": ["StaticVariables", "Main", "StageName"]
-                                            }
-                                        ]
-                                    ]
+                                    "Fn::Sub": "\n\t\"used-words-table\": \"${UsedWordsTable}\""
                                 },
-                                "\",",
-                                "\n",
-                                "\"generate-word-path-part\": \"",
+                                ",",
                                 {
-                                    "Fn::FindInMap": ["StaticVariables", "Main", "GenerateWordMethodPathPart"]
+                                    "Fn::Sub": "\n\t\"warming\": true"
                                 },
-                                "\"",
-                                "\n",
-                                "}"
+                                "\n}"
                             ]]
                         }
                     }
@@ -914,7 +832,7 @@
             "Properties": {
                 "Action": "lambda:InvokeFunction",
                 "FunctionName": {
-                    "Ref": "PreWarmApiFunction"
+                    "Ref": "WordGeneratorFunction"
                 },
                 "Principal": "events.amazonaws.com",
                 "SourceArn": {
@@ -922,8 +840,8 @@
                 }
             },
             "DependsOn": [
-                "PreWarmApiFunctionRoleActions",
-                "PreWarmApiFunctionLogGroup"
+                "WordGeneratorRoleActions",
+                "WordGeneratorFunctionLogGroup"
             ]
         },
 		"WordListTableTriggerFunction": {
