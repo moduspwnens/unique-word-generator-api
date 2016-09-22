@@ -1,4 +1,4 @@
-# Unique Word Generator API
+# Unique Word Generator Microservice API
 
 A serverless API for generating a guaranteed unique word from a preset word list.
 
