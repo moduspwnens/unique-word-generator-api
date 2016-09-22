@@ -41,7 +41,7 @@
         },
         "MaxRequestsPerSecond": {
             "Type": "Number",
-            "Description": "Sets provisioned DynamoDB throughput.",
+            "Description": "Sets provisioned DynamoDB read/write throughput. Note that the AWS free tier includes 25 per account.",
             "Default": 1,
             "MinValue": 1
         },
