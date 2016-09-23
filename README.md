@@ -36,7 +36,7 @@ Now your cluster of webservers has names that are unique, easy to remember, and 
 
 Click this button and follow the prompts to launch the stack.
 
-[![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=unique-word-generator1&templateURL=https://s3.amazonaws.com/bennlinger-public-site/unique-word-generator-api/unique-word-api.json)
+[![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=unique-word-generator1&templateURL=https://s3.amazonaws.com/bennlinger-public-site/unique-word-generator-api/unique-word-api.template)
 
 After the stack's status changes to CREATE_COMPLETE, select it and then click the Outputs tab. There's just one, and its value is the URL for your API's web interface. Click the link to give it a spin and see some code examples for utilizing it.
 
