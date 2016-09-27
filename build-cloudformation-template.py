@@ -4,6 +4,12 @@ from __future__ import print_function
 
 import os, sys, json
 
+try:
+    import ruamel.yaml
+except Exception as e:
+    raise Exception("Unable to import ruamel.yaml.\nTry \"pip install ruamel.yaml\".")
+    sys.exit(1)
+
 # These limits are set by CloudFormation.
 function_max_characters = 4096
 cloudformation_template_max_size = 460800 # Max for template loaded from S3
@@ -25,7 +31,7 @@ web_resource_name_source_map = {
 word_lists_directory_name = "word-lists"
 function_source_directory_name = "functions"
 web_source_directory_name = "web"
-cloudformation_source_template_file_name = "unique-word-api-source.json"
+cloudformation_source_template_file_name = "unique-word-api-source.yaml"
 
 repository_directory_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -48,11 +54,9 @@ except:
 cloudformation_template_object = None
 
 try:
-    cloudformation_template_object = json.loads(cloudformation_source_template_string)
+    cloudformation_template_object = ruamel.yaml.round_trip_load(cloudformation_source_template_string)
 except:
     raise Exception("Error decoding JSON from CloudFormation source template at {}.".format(cloudformation_source_template_file_path))
-
-
 
 '''
     LOAD WEB SOURCE CODE
@@ -208,17 +212,7 @@ print("Word list added to CloudFormation template successfully.", file=sys.stder
 '''
 
 # Try exporting in a friendly, readable format.
-output_template_string = json.dumps(cloudformation_template_object, indent=4)
-if len(output_template_string) > cloudformation_template_max_size:
-    
-    # If it's too big, try exporting in a JSON-minified format.
-    output_template_string = json.dumps(cloudformation_template_object, separators=(',', ':'))
-    
-    if len(output_template_string) > cloudformation_template_max_size:
-        raise Exception("Output CloudFormation template is too big at {} bytes (max: {}).".format(
-            len(output_template_string),
-            cloudformation_template_max_size
-        ))
+output_template_string = ruamel.yaml.round_trip_dump(cloudformation_template_object)
 
 print(output_template_string)
 
