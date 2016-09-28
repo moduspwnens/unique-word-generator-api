@@ -113,7 +113,7 @@ def lambda_handler(event, context):
             save_word_list(
                 event["ResourceProperties"]["WordListQueueUrl"],
                 event["ResourceProperties"]["WordList"],
-                event["ResourceProperties"]["ShuffleWordList"] != "No"
+                "{}".format(event["ResourceProperties"]["ShuffleWordList"]).lower() not in ["no", "false"]
             )
     
         except Exception as e:
